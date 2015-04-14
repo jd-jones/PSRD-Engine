@@ -8,6 +8,7 @@ var Conditions = require('./conditions.js');
 var Tags = require('./tags.js');
 var Variables = require('./variables.js');
 var Modifiers = require('./modifiers.js');
+var Names = require('./names.js');
 var Rules = require('../models/rules.js');
 
 module.exports.createRenderable = function(context) {
@@ -65,6 +66,7 @@ function apply(renderable, applications, gameobj) {
 	Tags.apply(renderable, applications);
 	Variables.apply(renderable, applications);
 	Modifiers.apply(renderable, applications, gameobj);
+	Names.apply(renderable, applications);
 }
 
 // Old

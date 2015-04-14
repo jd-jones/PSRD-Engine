@@ -3,6 +3,7 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 Backbone.$ = $;
 var Variable = require('./variable.js');
+var Name = require('./name.js');
 var Condition = require('./condition.js');
 
 var GameObject = module.exports = Backbone.Model.extend({
@@ -48,15 +49,26 @@ var GameObject = module.exports = Backbone.Model.extend({
 					});
 				}
 				if ("modifiers" in apply) {
-					var variables = [];
-					_.each(apply.modifiers, function(variable) {
-						if(variable instanceof Variable == false) {
-							variables.push(new Variable(variable));
+					var modifiers = [];
+					_.each(apply.modifiers, function(modifier) {
+						if(modifier instanceof Variable == false) {
+							modifiers.push(new Variable(modifier));
 						} else {
-							variables.push(variable);
+							modifiers.push(modifier);
 						}
 					});
-					apply.modifiers = variables;
+					apply.modifiers = modifiers;
+				}
+				if ("name" in apply) {
+					var names = [];
+					_.each(apply.name, function(name) {
+						if(name instanceof Name == false) {
+							names.push(new Name(name));
+						} else {
+							names.push(name);
+						}
+					});
+					apply.name = names;
 				}
 			});
 		}
@@ -84,6 +96,11 @@ var GameObject = module.exports = Backbone.Model.extend({
 				if ("modifiers" in apply) {
 					_.each(apply.modifiers, function(modifier) {
 						modifier.set('parameters', parameters);
+					});
+				}
+				if ("name" in apply) {
+					_.each(apply.name, function(name) {
+						name.set('parameters', parameters);
 					});
 				}
 			});

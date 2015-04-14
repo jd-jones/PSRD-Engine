@@ -141,7 +141,7 @@ Rules.addRule(new GameObject({
 				{"variable": "cost", "formula": "300"}
 			],
 			"name": [
-				{"operation": "unshift", "value": "Masterwork"}
+				{"operation": "unshift", "name": "Masterwork"}
 			]
 		}
 	}
@@ -183,7 +183,7 @@ Rules.addRule(new GameObject({
 				{"variable": "damage_modifier", "formula": "$.getVariable(renderable, this, '$.variables.plus')", "type": "enhancement"}
 			],
 			"name": [
-				{"operation": "remove", "value": "Masterwork"},
+				{"operation": "remove", "name": "Masterwork"},
 				{"operation": "unshift", "formula": "'+' + $.getVariable(renderable, this, '$.variables.plus');"}
 			]
 		}
@@ -292,7 +292,7 @@ Rules.addRule(new GameObject({
 					{"strength": "Moderate", "aura": "Transmutation"}}
 			],
 			"name": [
-				{"operation": "unshift", "value": "Keen"}
+				{"operation": "insert", "name": "Keen"}
 			]
 		}
 	}
@@ -329,6 +329,9 @@ Rules.addRule(new GameObject({
 				{"variable": "effective_plus", "formula": "1"},
 				{"variable": "magic_aura", "append":
 					{"strength": "Moderate", "aura": "Evocation"}}
+			],
+			"name": [
+				{"operation": "insert", "name": "Flaming"}
 			]
 		}
 	}

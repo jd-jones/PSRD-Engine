@@ -385,20 +385,20 @@ Rules.addRule(new Spell({
 	"type": "spell",
 	"url": "pfsrd://Core Rulebook/Spells/Fireball",
 	"variables": [
-		{"variable": "range", "default": 400, "formula": "40 * getSpellValue(renderable, variable, '$.character.variables.' + getSpellValue(renderable, variable, '$.casting_class') + '.ECL.value');", "name": "Range", "format": {"post": " ft."}},
-		{"variable": "area", "default": 20, "name": "Area", "format": {"post": "-ft.-radius spread"}},
+		{"variable": "range", "default": 400, "formula": "40 * $.getVariable(renderable, '$.character.variables.' + $.getVariable(renderable, variable, '$.casting_class') + '.ECL.value');", "name": "Range", "format": {"post": " ft."}},
+		{"variable": "area", "default": 20, "name": "Area"}},
 		{"variable": "level", "default": 3, "name": "Effective Spell Level"},
 		{"variable": "damage_die_sides", "default": 6, "name": "Damage Die Sides"},
 		{"variable": "damage_die_max", "default": 10, "name": "Max Damage Dice"},
-		{"variable": "damage_die_number", "default": 0, "formula": "min([getSpellValue(renderable, variable, '$.character.variables.' + getSpellValue(renderable, variable, '$.casting_class') + '.ECL.value'), getSpellValue(renderable, variable, '$.variables.damage_die_max.value')]);", "name": "Damage Dice Number"},
+		{"variable": "damage_die_number", "default": 0, "formula": "$.min([$.getVariable(renderable, '$.character.variables.' + $.getVariable(renderable, '$.casting_class') + '.ECL.value'), $.getVariable(renderable, '$.variables.damage_die_max')]);", "name": "Damage Dice Number"},
 		{"variable": "damage_die_bonus", "default": 0, "name": "Damage Dice Bonus"},
-		{"variable": "damage_dice", "formula": "getSpellValue(renderable, variable, '$.variables.damage_die_number.value') + 'd' + getSpellValue(renderable, variable, '$.variables.damage_die_sides.value') + getSpellValueConditional(renderable, variable, '$.variables.damage_die_bonus.value', '+', null)", "name": "Damage Dice"}
+		{"variable": "damage_dice", "formula": "$.getVariable(renderable, '$.variables.damage_die_number') + 'd' + $.getVariable(renderable, '$.variables.damage_die_sides') + getSpellValueConditional(renderable, variable, '$.variables.damage_die_bonus.value', '+', null)", "name": "Damage Dice"}
 	]
 }));
 */
 
 /*
-Rules.addRule({
+Rules.addRule(new GameObject({
 	"name": "", 
 	"sections": [
 		{
@@ -417,12 +417,16 @@ Rules.addRule({
 	"description": "You can cast your spells so that they occupy a larger space.",
 	"apply": {
 		"spell": [
-			{"variable": "level", "formula": "3"},
-			{"variable": "area",  "formula": "getSpellValue(renderable, variable, '$.variables.area.value')"},
-			{"variable": "name", "formula": "setSpellValue(renderable, '$.spell', 'name', 'Widened ' + getSpellValue(renderable, variable, '$.spell.name'));", "name": "Name"}
+			"modifiers": [
+				{"variable": "level", "formula": "3"},
+				{"variable": "area",  "formula": "$.getVariable(renderable, '$.variables.area')"}
+			],
+			"name": [
+				{"operation": "unshift", "name": "Widened"}
+			]
 		]
 	}
-});
+}));
 */
 
 /*
@@ -445,9 +449,13 @@ Rules.addRule({
 	"description": "You can increase the range of your spells.",
 	"apply": {
 		"spell": [
-			{"variable": "level", "formula": "1"},
-			{"variable": "range", "formula": "getSpellValue(renderable, variable, '$.variables.range.value')"},
-			{"variable": "name", "formula": "setSpellValue(renderable, '$.spell', 'name', 'Enlarged ' + getSpellValue(renderable, variable, '$.spell.name'));", "name": "Name"}
+			"modifiers": [
+				{"variable": "level", "formula": "1"},
+				{"variable": "range", "formula": "$.getVariable(renderable, '$.variables.range')"}
+			],
+			"name": [
+				{"operation": "unshift", "name": "Enlarged"}
+			]
 		]
 	}
 });

@@ -6,6 +6,7 @@ var JSONPath = require('JSONPath');
 
 var Dice = require('./api/dice.js');
 var Utils = require('./game/utils.js');
+var Variables = require('./game/variables.js');
 
 module.exports.Dice = Dice;
 module.exports.Item = require('./api/item.js');
@@ -32,10 +33,19 @@ module.exports.getVariable = function(renderable, variable, path) {
 	if(!(node)) {
 		return 0;
 	}
-	if (!(path in node.get('sources'))) {
-		node.get('sources').push(path);
+	if(variable.__name__ == "Variable") {
+		// To prevent the event being re-added on recalculation.  In that
+		// instance, variable comes in as the Bonus, not the original variable
+		node.on("change:value", function() {
+			var realvar = renderable.variables[this.get('variable')]
+			Variables.recalculateVariable(renderable, realvar);
+		}, variable);
 	}
-	var value = node.get('value');
+	var value = node.getValue();
+	if(variable.__name__ == 'Bonus') {
+		// Prevents infinite increment
+		value = node.getValue({"ignore": variable});
+	}
 	if (Utils.isNumeric(value)) {
 		return +value;
 	}

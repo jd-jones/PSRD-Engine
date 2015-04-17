@@ -46,80 +46,46 @@ function applyBonus(variable, bonus) {
 		variable.set('value', 0);
 	}
 	if(Utils.isNumeric(bonus.get('value')) && Utils.isNumeric(variable.get('value'))) {
-		if(bonus.has('type')) {
-			var max = 0;
-			_.each(variable.get("bonuses"), function (existing) {
-				if (existing.has('type')) {
-					if(existing.get('type') == bonus.get('type')) {
-						if (existing.get('value') > max) {
-							max = existing.get('value');
-						}
-					}
-				}
-			});
-			if (bonus.get('value') > max) {
-				variable.set('value', variable.get('value') + bonus.get('value') - max);
-			}
-		}
-		else {
-			variable.set('value', variable.get('value') + bonus.get('value'));
+		var sum = {"untyped": 0};
+		var total = variable.getValue();
+		if(variable.get('value') != total) {
+			variable.set('value', total);
 		}
 	}
 	else {
-		variable.set('value', bonus.get('value'));
+		if(variable.get('value') != bonus.get('value')) {
+			variable.set('value', bonus.get('value'));
+		}
 	}
 }
 
 var updateVariable = module.exports.updateVariable = function(renderable, newvar, name, guid) {
 	var variable = renderable['variables'][name];
-	var prevalue = variable.get('value');
-	if('formula' in newvar) {
+	if(newvar.has('formula')) {
 		var value = newvar.formula(Api, renderable);
 		var b = {'value': value, 'guid': guid, "formula": newvar.get('formula')};
 		if(newvar.has('type')) {
 			b.type = newvar.get('type');
 		}
 		var bonus = new Bonus(b);
-		applyBonus(variable, bonus);
 		variable.get('bonuses').push(bonus);
+		applyBonus(variable, bonus);
 	} else if (newvar.has('append')) {
 		variable.get('value').push(newvar.get('append'));
 	}
-	if (prevalue != variable.get('value')) {
-		propagateUpdates(renderable, '$.variables.' + name + '.value');
-	}
-	//propagateUpdates(renderable, '$.variables.' + name + '.value');
 }
 
-function propagateUpdates(renderable, path) {
-	_.each(renderable['variables'], function(variable) {
-		_.each(variable.sources, function(source) {
-			if(source == path) {
-				recalculateVariable(renderable, variable);
-			}
-		});
-	});
-}
-
-function recalculateVariable(renderable, variable) {
+var recalculateVariable = module.exports.recalculateVariable = function(renderable, variable) {
 	var total = 0;
-	var prevalue = variable.get('value');
-	variable.set('value', 0);
 	_.each(variable.get('bonuses'), function(bonus) {
 		if(bonus.has('formula')) {
-			bonus.set('value', 0);
+			var value = bonus.formula(Api, renderable);
+			if (value != bonus.get('value')) {
+				bonus.set('value', value);
+				applyBonus(variable, bonus);
+			}
 		}
 	});
-	_.each(variable.get('bonuses'), function(bonus) {
-		if(bonus.has('formula')) {
-			value = bonus.formula(Api, renderable);
-			bonus.set('value', value);
-			applyBonus(variable, bonus);
-		}
-	});
-	if (prevalue != variable.get('value')) {
-		propagateUpdates(renderable, '$.variables.' + name + '.value');
-	}
 }
 
 function addVariableApply(renderable, variable) {

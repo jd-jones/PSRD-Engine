@@ -20,4 +20,6 @@ Core.applyGameObjects(renderable,
 	Rules.getRule("pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Keen"),
 	Rules.getRule("pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Flaming"));
 
+Render.render(renderable);
+Render.renderCalculations(renderable);
 console.log(renderable);

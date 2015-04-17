@@ -11,9 +11,8 @@ var Bonus = module.exports = Backbone.Model.extend({
 		"formula": ""
 	},
 
-	initialize: function() {
-		if (this.get("formula") != "") {
-			this.formula = Function("$", "renderable", "return " + this.get("formula"));
-		}
+	formula: function($, renderable) {
+		this.formula = Function("$", "renderable", "return " + this.get("formula"));
+		return this.formula($, renderable);
 	}
 });

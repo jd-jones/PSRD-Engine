@@ -3,46 +3,63 @@ var Backbone = require('backbone');
 var _ = require('underscore');
 Backbone.$ = $;
 
-module.exports.render = function(data) {
-	$('#main').html(data);
+module.exports.render = function(renderable) {
+	var results = renderName(renderable);
+	$('#main').html(results);
 }
 
-
+function renderName(renderable) {
+	var results = "";
+	var name = renderable.name.join(seperator=" ");
+	results += "<h1 class='title-1'>" + name + "</h1>\n";
+	return results;
+}
 
 
 
 
 // Old code to be converted
 
-function renderDice(renderable) {
-	$('#dice').empty();
-	$('#dice').html(renderSection(renderable['dice'], renderable['variables'], 1));
-	$('#dice-calculations').empty();
+module.exports.renderCalculations = function(renderable) {
+	$('#calculations').empty();
 	if ('variables' in renderable) {
 		calculations = "<H2>Calculated Values</H2>\n";
-		forEach(renderable['variables'], function(field) {
-			calculations += "<span class='detail-title'>" + field['name'] + ":</span> <span class='detail-value'>";
-			if ('format' in field) {
-				if ('pre' in field['format']) {
-					calculations += field['format']['pre'];
+		_.each(renderable.variables, function(variable, name) {
+			calculations += "<span class='detail-title'>" + name + ":</span> <span class='detail-value'>";
+//			if ('format' in field) {
+//				if ('pre' in field['format']) {
+//					calculations += field['format']['pre'];
+//				}
+//			}
+			calculations += variable.get('value');
+//			if ('format' in field) {
+//				if ('post' in field['format']) {
+//					calculations += field['format']['post'];
+//				}
+//			}
+			calculations += "<ul>";
+			_.each(variable.get('bonuses'), function(bonus) {
+				calculations += "<li>";
+				var comma = "";
+				_.each(bonus.attributes, function(value, key) {
+					if (key != 'guid') {
+						calculations += comma + key + ": " + value;
 				}
-			}
-			calculations += field['value'];
-			if ('format' in field) {
-				if ('post' in field['format']) {
-					calculations += field['format']['post'];
-				}
-			}
+					comma = ", ";
+				});
+				calculations += "</li>\n"
+			});
+			calculations += "</ul>\n";
 			calculations += "</span><br>\n";
 		});
-		$('#dice-calculations').html(calculations);
+		$('#calculations').html(calculations);
 	}
 }
 
 // Render functions
 
 function renderSection(section, variables, h) {
-	results = "";
+	var results = "";
 	if (section['type'] in renderers) {
 		renderer = renderers[section['type']]
 		results += renderer.renderHeader(section, variables);

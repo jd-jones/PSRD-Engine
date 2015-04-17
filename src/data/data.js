@@ -74,7 +74,9 @@ Rules.addRule(new GameObject({
 				{"operation": "add", "variable":
 					{"variable": "hit_points", "default": 0}},
 				{"operation": "add", "variable":
-					{"variable": "hardness", "default": 0}}
+					{"variable": "hardness", "default": 0}},
+				{"operation": "add", "variable":
+					{"variable": "plus", "default": 0}}
 			],
 			"modifiers": [
 				{"variable": "armor_class", "formula": "-5", "type": "dex_mod"},

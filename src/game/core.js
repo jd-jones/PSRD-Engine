@@ -11,23 +11,27 @@ var Modifiers = require('./modifiers.js');
 var Names = require('./names.js');
 var Rules = require('../models/rules.js');
 
-module.exports.createRenderable = function(context) {
+module.exports.createRenderable = function(base) {
 	var renderable = {
-		"context": context.clone(),
+		"base": base.clone(),
 		"variables": {},
-		"tags": context.get('tags'),
 		"applied": [],
-		"name": [context.get('name')]
+		"arrays": {
+			"name": [base.get('name')]
+		}
 	}
-	renderable.context.set('guid', Utils.guid());
-	_.each(context.variables(), function(variable, varName) {
-		Variables.addVariable(renderable, variable, varName);
-	});
-	if (context.has('dependencies')) {
-		_.each(context.get('dependencies'), function(dependency) {
+	renderable.base.set('guid', Utils.guid());
+	_.each(base.get('create'), function(create, context) {
+		_.each(create.arrays, function(value, key) {
+			renderable.arrays[key] = value;
+		});
+		_.each(create.variables, function(variable) {
+			Variables.addVariable(renderable, variable, variable.get('variable'));
+		});
+		_.each(create.dependencies, function(dependency) {
 			applyGameObjects(renderable, Rules.getRule(dependency));
 		});
-	}
+	});
 	return renderable;
 }
 
@@ -39,12 +43,12 @@ var applyGameObjects = module.exports.applyGameObjects = function() {
 		var gameobj = realobj.clone();
 		gameobj.guid = Utils.guid();
 		if (gameobj.has('apply')) {
-			var type = renderable.context.get('type');
-			var subtype = renderable.context.get('subtype');
+			var type = renderable.base.get('type');
+			var subtype = renderable.base.get('subtype');
 			if(type in gameobj.get('apply')) {
 				apply(renderable, gameobj.get('apply')[type], gameobj)
 			}
-			if(renderable.context.get('subtype') in gameobj.get('apply')) {
+			if(renderable.base.get('subtype') in gameobj.get('apply')) {
 				apply(renderable, gameobj.get('apply')[subtype], gameobj)
 			}
 			renderable.applied.push(gameobj);

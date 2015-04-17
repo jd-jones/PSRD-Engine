@@ -6,19 +6,19 @@ Backbone.$ = $;
 var Api = require('../api.js');
 
 function shift(renderable, apply) {
-	renderable.name.shift();
+	renderable.arrays.name.shift();
 }
 
 function unshift(renderable, apply) {
-	renderable.name.unshift(getName(renderable, apply));
+	renderable.arrays.name.unshift(getName(renderable, apply));
 }
 
 function push(renderable, apply) {
-	renderable.name.push(getName(renderable, apply));
+	renderable.arrays.name.push(getName(renderable, apply));
 }
 
 function pop(renderable, apply) {
-	renderable.name.pop();
+	renderable.arrays.name.pop();
 }
 
 function insert(renderable, apply) {
@@ -26,11 +26,11 @@ function insert(renderable, apply) {
 	if(apply.has("index")) {
 		index = apply.get('index');
 	}
-	renderable.name.splice(index, 0, getName(renderable, apply));
+	renderable.arrays.name.splice(index, 0, getName(renderable, apply));
 }
 
 function remove(renderable, apply) {
-	renderable.name = _.without(renderable.name, getName(renderable, apply));
+	renderable.arrays.name = _.without(renderable.arrays.name, getName(renderable, apply));
 }
 
 function getName(renderable, apply) {

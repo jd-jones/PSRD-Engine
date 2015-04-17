@@ -24,7 +24,7 @@ module.exports.ceil = function(num) {
 }
 
 module.exports.hasTag = function(renderable, tag) {
-	var result = _.indexOf(renderable.tags, tag) > -1;
+	var result = _.indexOf(renderable.arrays.tags, tag) > -1;
 	return result
 }
 
@@ -53,7 +53,7 @@ module.exports.getVariable = function(renderable, variable, path) {
 }
 
 module.exports.getTags = function(renderable) {
-	return renderable.tags;
+	return renderable.arrays.tags;
 }
 
 module.exports.getUrlArg = function(modifier, arg) {

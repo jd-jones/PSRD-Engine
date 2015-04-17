@@ -4,11 +4,11 @@ var _ = require('underscore');
 Backbone.$ = $;
 
 function add(renderable, apply) {
-	renderable.tags.push(apply["tag"]);
+	renderable.arrays.tags.push(apply["tag"]);
 }
 
 function remove(renderable, apply) {
-	renderable.tags = _.without(renderable.tags, apply["tag"]);
+	renderable.arrays.tags = _.without(renderable.arrays.tags, apply["tag"]);
 }
 
 module.exports.apply = function(renderable, applications) {

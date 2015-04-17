@@ -17,19 +17,19 @@ var addVariable = module.exports.addVariable = function(renderable, variable, va
 		if (Utils.isNumeric(variable.get('default'))) {
 			newvar['bonuses'].push(new Bonus({
 				'value': variable.get('default'),
-				'guid': renderable.context.get('guid'),
+				'guid': renderable.base.get('guid'),
 				'formula': variable.get('default')
 			}));
 		} else if (variable.get('default') instanceof Array) {
 			newvar['bonuses'].push(new Bonus({
 				'value': variable.get('default'),
-				'guid': renderable.context.get('guid'),
+				'guid': renderable.base.get('guid'),
 				'formula': JSON.stringify(variable.get('default'))
 			}));
 		} else {
 			newvar['bonuses'].push(new Bonus({
 				'value': variable.get('default'),
-				'guid': renderable.context.get('guid'),
+				'guid': renderable.base.get('guid'),
 				'formula': "'" + variable.get('default') + "'"
 			}));
 		}
@@ -37,7 +37,7 @@ var addVariable = module.exports.addVariable = function(renderable, variable, va
 	renderable['variables'][varName] = new AppliedVariable(newvar);
 	if('formula' in variable) {
 		updateVariable(
-			renderable, variable, varName, renderable.context.get('guid'));
+			renderable, variable, varName, renderable.base.get('guid'));
 	}
 }
 
@@ -46,7 +46,6 @@ function applyBonus(variable, bonus) {
 		variable.set('value', 0);
 	}
 	if(Utils.isNumeric(bonus.get('value')) && Utils.isNumeric(variable.get('value'))) {
-		var sum = {"untyped": 0};
 		var total = variable.getValue();
 		if(variable.get('value') != total) {
 			variable.set('value', total);
@@ -70,8 +69,10 @@ var updateVariable = module.exports.updateVariable = function(renderable, newvar
 		var bonus = new Bonus(b);
 		variable.get('bonuses').push(bonus);
 		applyBonus(variable, bonus);
-	} else if (newvar.has('append')) {
-		variable.get('value').push(newvar.get('append'));
+	} else if (newvar.has('operation')) {
+		if(newvar.get('operation') == "push") {
+			variable.get('value').push(newvar.get('value'));
+		}
 	}
 }
 
@@ -98,9 +99,7 @@ function addVariableApply(renderable, variable) {
 module.exports.apply = function(renderable, applications) {
 	if("variables" in applications) {
 		_.each(applications.variables, function(varApply) {
-			if (varApply.operation == "add") {
-				addVariableApply(renderable, varApply.variable);
-			}
+			addVariableApply(renderable, varApply);
 		});
 	}
 }

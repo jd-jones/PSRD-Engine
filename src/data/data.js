@@ -30,30 +30,44 @@ Rules.addRule(new GameObject({
 	"source": "Ultimate Equipment",
 	"type": "item",
 	"subtype": "weapon",
-	"variables": [
-		{"variable": "cost", "default": 15, "name": "Cost"},
-		{"variable": "size", "default": "medium", "name": "Size"},
-		{"variable": "damage", "default": "1d8", "name": "Dmg (m)"},
-		{"variable": "crit_range", "default": 2, "name": "Critical"},
-		{"variable": "crit_mult", "default": 2, "name": "Critical Mult"},
-		{"variable": "type", "default": "S", "name": "Damage Type"},
-		{"variable": "weight", "default": 4, "name": "Weight"},
-		{"variable": "to_hit_modifier", "default": 0, "name": "To Hit"},
-		{"variable": "damage_modifier", "default": 0, "name": "Damage"}
-	],
-	"dependencies": [
-		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object"
-	],
-	"tags": [
-		"Weapon",
-		"Weapon.Melee",
-		"Weapon.OneHanded",
-		"Weapon.Martial",
-		"Weapon.Slashing",
-		"Weapon.Blade",
-		"Material.Steel",
-		"Material.Metal"
-	]
+	"create": {
+		"item": {
+			"variables": [
+				{"variable": "cost", "default": 15},
+				{"variable": "size", "default": "medium"},
+				{"variable": "weight", "default": 4},
+			],
+			"arrays": {
+				"tags": [
+					"Material.Steel",
+					"Material.Metal"
+				]
+			}
+		},
+		"weapon": {
+			"variables": [
+				{"variable": "damage", "default": "1d8"},
+				{"variable": "crit_range", "default": 2},
+				{"variable": "crit_mult", "default": 2},
+				{"variable": "type", "default": "S"},
+				{"variable": "to_hit_modifier", "default": 0},
+				{"variable": "damage_modifier", "default": 0}
+			],
+			"arrays": {
+				"tags": [
+					"Weapon",
+					"Weapon.Melee",
+					"Weapon.OneHanded",
+					"Weapon.Martial",
+					"Weapon.Slashing",
+					"Weapon.Blade"
+				]
+			},
+			"dependencies": [
+				"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object"
+			]
+		}
+	}
 }));
 
 Rules.addRule(new GameObject({
@@ -69,14 +83,10 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"variables": [
-				{"operation": "add", "variable":
-					{"variable": "armor_class", "default": 10}},
-				{"operation": "add", "variable":
-					{"variable": "hit_points", "default": 0}},
-				{"operation": "add", "variable":
-					{"variable": "hardness", "default": 0}},
-				{"operation": "add", "variable":
-					{"variable": "plus", "default": 0}}
+				{"variable": "armor_class", "default": 10},
+				{"variable": "hit_points", "default": 0},
+				{"variable": "hardness", "default": 0},
+				{"variable": "plus", "default": 0}
 			],
 			"modifiers": [
 				{"variable": "armor_class", "formula": "-5", "type": "dex_mod"},
@@ -173,10 +183,8 @@ Rules.addRule(new GameObject({
 				{"operation": "add", "tag": "Magic.Plus"},
 			],
 			"variables": [
-				{"operation": "add", "variable":
-					{"variable": "plus", "default": 0}},
-				{"operation": "add", "variable":
-					{"variable": "effective_plus", "default": 0}},
+				{"variable": "plus", "default": 0},
+				{"variable": "effective_plus", "default": 0}
 			],
 			"modifiers": [
 				{"variable": "plus", "formula": "$.getUrlArg(this, 'plus')"},
@@ -204,22 +212,20 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"armor": {
 			"variables": [
-				{"operation": "add", "variable":
-					{"variable": "magic_aura", "default": []}}
+				{"variable": "magic_aura", "default": []}
 			],
 			"modifiers": [
-				{"variable": "magic_aura", "append":
-					{"aura": "Abjuration"}},
+				{"variable": "magic_aura", "operation": "push",
+					"value": {"aura": "Abjuration"}},
 			]
 		},
 		"weapon": {
 			"variables": [
-				{"operation": "add", "variable":
-					{"variable": "magic_aura", "default": []}}
+				{"variable": "magic_aura", "default": []}
 			],
 			"modifiers": [
-				{"variable": "magic_aura", "append":
-					{"aura": "Transmutation"}}
+				{"variable": "magic_aura", "operation": "push",
+					"value": {"aura": "Transmutation"}}
 			]
 		}
 	}
@@ -290,8 +296,8 @@ Rules.addRule(new GameObject({
 			"modifiers": [
 				{"variable": "crit_range", "formula": "$.getVariable(renderable, this, '$.variables.crit_range')", "bonus_type": "keen"},
 				{"variable": "effective_plus", "formula": "1"},
-				{"variable": "magic_aura", "append":
-					{"strength": "Moderate", "aura": "Transmutation"}}
+				{"variable": "magic_aura", "operation": "push",
+					"value": {"strength": "Moderate", "aura": "Transmutation"}}
 			],
 			"name": [
 				{"operation": "insert", "name": "Keen"}
@@ -322,15 +328,14 @@ Rules.addRule(new GameObject({
 				{"operation": "add", "tag": "Flaming"}
 			],
 			"variables": [
-				{"operation": "add", "variable":
-					{"variable": "bonus_damage", "default": []}}
+				{"variable": "bonus_damage", "default": []}
 			],
 			"modifiers": [
-				{"variable": "bonus_damage", "append":
-					{"damage": "1d6", "type": "flaming"}},
+				{"variable": "bonus_damage", "operation": "push",
+					"value": {"damage": "1d6", "type": "flaming"}},
 				{"variable": "effective_plus", "formula": "1"},
-				{"variable": "magic_aura", "append":
-					{"strength": "Moderate", "aura": "Evocation"}}
+				{"variable": "magic_aura", "operation": "push",
+					"value": {"strength": "Moderate", "aura": "Evocation"}}
 			],
 			"name": [
 				{"operation": "insert", "name": "Flaming"}

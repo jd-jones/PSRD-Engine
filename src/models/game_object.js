@@ -8,24 +8,31 @@ var Condition = require('./condition.js');
 
 var GameObject = module.exports = Backbone.Model.extend({
 	__name__: 'GameObject',
-	__variables__: {},
 	defaults: {
 		"text": "",
 		"name": "",
 		"source": "",
 		"url": "",
 		"type": "",
-		"subtype": "",
-		"variables": [],
-		"tags": []
+		"subtype": ""
 	},
 
 	initialize: function() {
-		var variables = {}
-		_.each(this.get("variables"), function(source) {
-			variables[source["variable"]] = new Variable(source)
-		});
-		this.__variables__ = variables
+		if (this.has("create")) {
+			_.each(this.get("create"), function(create, key) {
+				if ("variables" in create) {
+					var variables = [];
+					_.each(create.variables, function(variable) {
+						if(variable instanceof Variable == false) {
+							variables.push(new Variable(variable));
+						} else {
+							variables.push(variable);
+						}
+					});
+					create.variables = variables;
+				}
+			});
+		}
 		if (this.has("apply")) {
 			_.each(this.get("apply"), function(apply, key) {
 				if ("conditions" in apply) {
@@ -40,13 +47,15 @@ var GameObject = module.exports = Backbone.Model.extend({
 					apply.conditions = conditions
 				}
 				if ("variables" in apply) {
-					_.each(apply.variables, function(operation) {
-						if (operation.operation == "add") {
-							if(operation.variable instanceof Variable == false) {
-								operation.variable = new Variable(operation.variable);
-							}
+					var variables = [];
+					_.each(apply.variables, function(variable) {
+						if(variable instanceof Variable == false) {
+							variables.push(new Variable(variable));
+						} else {
+							variables.push(variable);
 						}
 					});
+					apply.variables = variables;
 				}
 				if ("modifiers" in apply) {
 					var modifiers = [];
@@ -73,10 +82,6 @@ var GameObject = module.exports = Backbone.Model.extend({
 			});
 		}
 		this.setUrl(this.get('url'));
-	},
-
-	variables: function(context) {
-		return this.__variables__
 	},
 
 	setUrl: function(newurl) {

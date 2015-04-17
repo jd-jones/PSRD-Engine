@@ -10,15 +10,10 @@ module.exports.render = function(renderable) {
 
 function renderName(renderable) {
 	var results = "";
-	var name = renderable.name.join(seperator=" ");
+	var name = renderable.arrays.name.join(seperator=" ");
 	results += "<h1 class='title-1'>" + name + "</h1>\n";
 	return results;
 }
-
-
-
-
-// Old code to be converted
 
 module.exports.renderCalculations = function(renderable) {
 	$('#calculations').empty();

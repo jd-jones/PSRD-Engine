@@ -1,15 +1,15 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 
 var Variables = require('./variables.js');
 
-module.exports.apply = function(renderable, applications, gameobj) {
+module.exports.apply = function(renderable, section, applications, context) {
 	if("modifiers" in applications) {
 		_.each(applications.modifiers, function(modApply) {
-			if(modApply.get('variable') in renderable.variables) {
-				Variables.updateVariable(renderable, modApply, modApply.get('variable'), gameobj.guid);
+			var variable = Variables.getVariable(renderable, context, modApply.get('variable'));
+			if(variable) {
+				Variables.updateVariable(renderable, context, modApply, section.guid);
 			}
 		});
 	}

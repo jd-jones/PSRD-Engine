@@ -1,7 +1,6 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 
 var RulesObject = Backbone.Model.extend({
 	__name__: 'Rules',

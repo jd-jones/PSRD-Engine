@@ -1,11 +1,240 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 
 var GameObject = require('../models/game_object.js');
 var Spell = require('../models/spell.js');
 var Rules = require('../models/rules.js');
+
+// "pfsrd://Core Rulebook/Rules/Equipment/Weapons?children=false",
+Rules.addRule(new GameObject({
+	"body": "<p>From the common longsword to the exotic dwarven urgrosh, weapons come in a wide variety of shapes and sizes. </p><p>All weapons deal hit point damage. This damage is subtracted from the current hit points of any creature struck by the weapon. When the result of the die roll to make an attack is a natural 20 (that is, the die actually shows a 20), this is known as a critical threat (although some weapons can score a critical threat on a roll of less than 20). If a critical threat is scored, another attack roll is made, using the same modifiers as the original attack roll. If this second attack roll is equal or greater than the target's AC, the hit becomes a critical hit, dealing additional damage.</p><p>Weapons are grouped into several interlocking sets of categories. These categories pertain to what training is needed to become proficient in a weapon's use (simple, martial, or exotic), the weapon's usefulness either in close combat (melee) or at a distance (ranged, which includes both thrown and projectile weapons), its relative encumbrance (light, one-handed, or two-handed), and its size (Small, Medium, or Large).</p>",
+	"name": "Weapons",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons",
+	"type": "section",
+	"source": "Core Rulebook",
+	"dependencies": [
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Cost",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Dmg",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Critical",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Range",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Weight",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Type",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Special",
+		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object"
+	],
+	"apply": {
+		"section": {
+			"variables": [
+				{"variable": "tags", "default": []},
+				{"variable": "name", "default": []}
+			]
+		},
+		"weapon": {
+			"variables": [
+				{"variable": "size", "default": "medium"},
+			]
+		}
+	}
+}));
+
+// Cost
+Rules.addRule(new GameObject({
+	"body": "<p>This value is the weapon's cost in gold pieces (gp) or silver pieces (sp). The cost includes miscellaneous gear that goes with the weapon, such as a scabbard or quiver.</p><p>This cost is the same for a Small or Medium version of the weapon. A Large version costs twice the listed price.</p>",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Cost",
+	"type": "section",
+	"name": "Cost",
+	"source": "Core Rulebook",
+	"apply": {
+		"item": {
+			"variables": [
+				{"variable": "cost", "default": 0}
+			],
+			"modifiers": [
+				{"variable": "cost", "formula": "$.getVariable(renderable, this, '$.weapon.cost')"}
+			]
+		},
+		"weapon": {
+			"variables": [
+				{"variable": "cost", "default": 0}
+			],
+			"modifiers": [
+				{"variable": "cost", "formula": "$.Weapon.sizeCost($.getVariable(renderable, this, '$.weapon.cost'), $.getVariable(renderable, this, '$.weapon.size'))"}
+			]
+		}
+	}
+}));
+
+// Damage
+Rules.addRule(new GameObject({
+	"body": "<p>These columns give the damage dealt by the weapon on a successful hit. The column labeled &ldquo;Dmg (S)&rdquo; is for Small weapons. The column labeled &ldquo;Dmg (M)&rdquo; is for Medium weapons. If two damage ranges are given, then the weapon is a double weapon. Use the second damage figure given for the double weapon's extra attack. Table: Tiny and Large Weapon Damage gives weapon damage values for Tiny and Large weapons.</p>",
+	"name": "Dmg",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Dmg",
+	"type": "section",
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"variables": [
+				{"variable": "medium_damage", "default": "-"},
+				{"variable": "damage", "default": "-"}
+			],
+			"modifiers": [
+				{"variable": "damage", "formula": "$.Weapon.sizeDamage($.getVariable(renderable, this, '$.weapon.medium_damage'), $.getVariable(renderable, this, '$.weapon.size'))"}
+			]
+		}
+	}
+}));
+
+// Critical
+Rules.addRule(new GameObject({
+	"body": "<p>The entry in this column notes how the weapon is used with the rules for critical hits. When your character scores a critical hit, roll the damage two, three, or four times, as indicated by its critical multiplier (using all applicable modifiers on each roll), and add all the results together.</p><p>Extra damage over and above a weapon's normal damage is not multiplied when you score a critical hit.</p><p>&times;<i>2</i>The weapon deals double damage on a critical hit.</p><p>&times;<i>3</i>The weapon deals triple damage on a critical hit.</p><p>&times;<i>3/</i>&times;<i>4</i>One head of this double weapon deals triple damage on a critical hit. The other head deals quadruple damage on a critical hit.</p><p>&times;<i>4</i>The weapon deals quadruple damage on a critical hit.</p><p>19-20/&times;<i>2</i>The weapon scores a threat on a natural roll of 19 or 20 (instead of just 20) and deals double damage on a critical hit. </p><p>18-20/&times;<i>2</i>The weapon scores a threat on a natural roll of 18, 19, or 20 (instead of just 20) and deals double damage on a critical hit. </p>",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Critical",
+	"type": "section",
+	"name": "Critical",
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"variables": [
+				{"variable": "crit_range", "default": 1},
+				{"variable": "crit_mult", "default": 1}
+			]
+		}
+	}
+}));
+
+// Range
+Rules.addRule(new GameObject({
+	"body": "<p>Any attack at more than this distance is penalized for range. Beyond this range, the attack takes a cumulative &ndash;2 penalty for each full range increment (or fraction thereof) of distance to the target. For example, a dagger (with a range of 10 feet) thrown at a target that is 25 feet away would incur a &ndash;4 penalty. A thrown weapon has a maximum range of five range increments. A projectile weapon can shoot to 10 range increments.</p>",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Range",
+	"type": "section",
+	"name": "Range",
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"variables": [
+				{"variable": "range", "default": 0}
+			]
+		}
+	}
+}));
+
+// Weight
+Rules.addRule(new GameObject({
+	"body": "<p>This column gives the weight of a Medium version of the weapon. Halve this number for Small weapons and double it for Large weapons. Some weapons have a special weight. See the weapon's description for details.</p>",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Weight",
+	"type": "section",
+	"name": "Weight",
+	"source": "Core Rulebook",
+	"apply": {
+		"item": {
+			"variables": [
+				{"variable": "weight", "default": 0}
+			]
+		},
+		"weapon": {
+			"modifiers": [
+				{"variable": "$.item.weight", "formula": "$.Weapon.sizeWeight($.getVariable(renderable, this, '$.item.weight'), $.getVariable(renderable, this, '$.weapon.size'))"}
+			]
+		}
+	}
+}));
+
+// Type
+Rules.addRule(new GameObject({
+	"body": "<p>Weapons are classified according to the type of damage they deal: B for bludgeoning, P for piercing, or S for slashing. Some monsters may be resistant or immune to attacks from certain types of weapons.</p><p>Some weapons deal damage of multiple types. If a weapon causes two types of damage, the type it deals is not half one type and half another; all damage caused is of both types. Therefore, a creature would have to be immune to both types of damage to ignore any of the damage caused by such a weapon.</p><p>In other cases, a weapon can deal either of two types of damage. In a situation where the damage type is significant, the wielder can choose which type of damage to deal with such a weapon.</p>",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Type",
+	"type": "section",
+	"name": "Type",
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"variables": [
+				{"variable": "type", "default": ""},
+			]
+		}
+	}
+}));
+
+// Special
+Rules.addRule(new GameObject({
+	"body": "<p>Some weapons have special features in addition to those noted in their descriptions. </p>",
+	"name": "Special",
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Special",
+	"type": "section",
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"variable": [
+				{"variable": "special", "default": []}
+			]
+		}
+	}
+}));
+
+// Smashing an object
+Rules.addRule(new GameObject({
+	"body": "<p>Smashing a weapon or shield with a slashing or bludgeoning weapon is accomplished with the sunder combat maneuver (see Combat). Smashing an object is like sundering a weapon or shield, except that your combat maneuver check is opposed by the object's AC. Generally, you can smash an object only with a bludgeoning or slashing weapon.</p><p>Armor Class: Objects are easier to hit than creatures because they don't usually move, but many are tough enough to shrug off some damage from each blow. An object's Armor Class is equal to 10 + its size modifier (see Table: Size and Armor Class of Objects) + its Dexterity modifier. An inanimate object has not only a Dexterity of 0 (&ndash;5 penalty to AC), but also an additional &ndash;2 penalty to its AC. Furthermore, if you take a full-round action to line up a shot, you get an automatic hit with a melee weapon and a +5 bonus on attack rolls with a ranged weapon.</p><p>Hardness: Each object has hardness&mdash;a number that represents how well it resists damage. When an object is damaged, subtract its hardness from the damage. Only damage in excess of its hardness is deducted from the object's hit points (see Table: Common Armor, Weapon, and Shield Hardness and Hit Points, Table: Substance Hardness and Hit Points, and Table: Object Hardness and Hit Points).</p><p>Hit Points: An object's hit point total depends on what it is made of and how big it is (see Table: Common Armor, Weapon, and Shield Hardness and Hit Points, Table: Substance Hardness and Hit Points, and Table: Object Hardness and Hit Points). Objects that take damage equal to or greater than half their total hit points gain the broken condition (see Conditions). When an object's hit points reach 0, it's ruined.</p><p>Very large objects have separate hit point totals for different sections.</p><p>Energy Attacks: Energy attacks deal half damage to most objects. Divide the damage by 2 before applying the object's hardness. Some energy types might be particularly effective against certain objects, subject to GM discretion. For example, fire might do full damage against parchment, cloth, and other objects that burn easily. Sonic might do full damage against glass and crystal objects.</p><p>Ranged Weapon Damage: Objects take half damage from ranged weapons (unless the weapon is a siege engine or something similar). Divide the damage dealt by 2 before applying the object's hardness.</p><p>Ineffective Weapons: Certain weapons just can't effectively deal damage to certain objects. For example, a bludgeoning weapon cannot be used to damage a rope. Likewise, most melee weapons have little effect on stone walls and doors, unless they are designed for breaking up stone, such as a pick or hammer.</p><p>Immunities: Objects are immune to nonlethal damage and to critical hits.</p><p>Magic Armor, Shields, and Weapons: Each +1 of enhancement bonus adds 2 to the hardness of armor, a weapon, or a shield, and +10 to the item's hit points.</p><p>Vulnerability to Certain Attacks: Certain attacks are especially successful against some objects. In such cases, attacks deal double their normal damage and may ignore the object's hardness.</p><p>Damaged Objects: A damaged object remains functional with the broken condition until the item's hit points are reduced to 0, at which point it is destroyed.</p><p>Damaged (but not destroyed) objects can be repaired with the Craft skill and a number of spells.</p><p>Saving Throws: Nonmagical, unattended items never make saving throws. They are considered to have failed their saving throws, so they are always fully affected by spells and other attacks that allow saving throws to resist or negate. An item attended by a character (being grasped, touched, or worn) makes saving throws as the character (that is, using the character's saving throw bonus).</p><p>Magic items always get saving throws. A magic item's Fortitude, Reflex, and Will save bonuses are equal to 2 + half its caster level. An attended magic item either makes saving throws as its owner or uses its own saving throw bonus, whichever is better.</p><p>Animated Objects: Animated objects count as creatures for purposes of determining their Armor Class (do not treat them as inanimate objects).</p>", 
+	"name": "Smashing an Object", 
+	"url": "pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object", 
+	"source": "Core Rulebook", 
+	"type": "section",
+	"dependencies": [
+		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Table Size and Armor Class of Objects",
+		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Breaking Items/Table Common Armor/Weapon/and Shield Hardness and Hit Points"
+	],
+	"apply": {
+		"weapon": {
+			"modifiers": [
+				{"variable": "armor_class", "formula": "-5", "type": "dex_mod"},
+				{"variable": "armor_class", "formula": "-2"},
+			]
+		}
+	}
+}));
+
+// Weapon HP/Hardness
+Rules.addRule(new GameObject({
+	"body": "<table id=\"table-7-12-common-armor-weapon-and-shield-hardness-and-hit-points\"><caption>Table: Common Armor, Weapon, and Shield Hardness and Hit Points</caption><thead><tr><th>Weapon or Shield</th><th>Hardness<sup>1</sup></th><th>Hit Points<sup>2, 3</sup></th></tr></thead><tr class=\"odd\"><td>Light blade</td><td>10</td><td>2</td></tr><tr class=\"even\"><td>One-handed blade</td><td>10</td><td>5</td></tr><tr class=\"odd\"><td>Two-handed blade</td><td>10</td><td>10</td></tr><tr class=\"even\"><td>Light metal-hafted weapon</td><td>10</td><td>10</td></tr><tr class=\"odd\"><td>One-handed metal-hafted weapon</td><td>10</td><td>20</td></tr><tr class=\"even\"><td>Light hafted weapon</td><td>5</td><td>2</td></tr><tr class=\"odd\"><td>One-handed hafted weapon</td><td>5</td><td>5</td></tr><tr class=\"even\"><td>Two-handed hafted weapon</td><td>5</td><td>10</td></tr><tr class=\"odd\"><td>Projectile weapon</td><td>5</td><td>5</td></tr><tr class=\"even\"><td>Armor</td><td>special<sup>4</sup></td><td>armor bonus \u00d7 5</td></tr><tr class=\"odd\"><td>Buckler</td><td>10</td><td>5</td></tr><tr class=\"even\"><td>Light wooden shield</td><td>5</td><td>7</td></tr><tr class=\"odd\"><td>Heavy wooden shield</td><td>5</td><td>15</td></tr><tr class=\"even\"><td>Light steel shield</td><td>10</td><td>10</td></tr><tr class=\"odd\"><td>Heavy steel shield</td><td>10</td><td>20</td></tr><tr class=\"even\"><td>Tower shield</td><td>5</td><td>20</td></tr><tfoot><tr><td colspan=\"3\"><sup>1</sup> Add +2 for each +1 enhancement bonus of magic items.</td></tr><tr><td colspan=\"3\"><sup>2</sup> The hp value given is for Medium armor, weapons, and shields. Divide by 2 for each size category of the item smaller than Medium, or multiply it by 2 for each size category larger than Medium.</td></tr><tr><td colspan=\"3\"><sup>3</sup> Add 10 hp for each +1 enhancement bonus of magic items.</td></tr><tr><td colspan=\"3\"><sup>4</sup> Varies by material; see Table: Substance Hardness and Hit Points.</td></tr></tfoot></table>",
+	"name": "Table: Common Armor, Weapon, and Shield Hardness and Hit Points",
+	"url": "pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Breaking Items/Table Common Armor/Weapon/and Shield Hardness and Hit Points",
+	"source": "Core Rulebook",
+	"type": "table",
+	"apply": {
+		"weapon": {
+			"variables": [
+				{"variable": "hit_points", "default": 0},
+				{"variable": "hardness", "default": 0},
+			],
+			"modifiers": [
+				{"variable": "hit_points", "formula": "$.Weapon.hitPoints(renderable, $.getVariable(renderable, this, '$.weapon.size'))"},
+				{"variable": "hardness", "formula": "$.Weapon.hardness(renderable, $.getVariable(renderable, this, '$.weapon.size'))"},
+			]
+		}
+	}
+}));
+
+// Weapon AC Size
+Rules.addRule(new GameObject({
+	"body": "<table id=\"table-7-11-size-and-armor-class-of-objects\"><caption>Table: Size and Armor Class of Objects</caption><thead><tr><th>Size</th><th>AC Modifier</th></tr></thead><tbody><tr class=\"odd\"><td>Colossal</td><td>&ndash;8</td></tr><tr class=\"even\"><td>Gargantuan</td><td>&ndash;4</td></tr><tr class=\"odd\"><td>Huge</td><td>&ndash;2</td></tr><tr class=\"even\"><td>Large</td><td>&ndash;1</td></tr><tr class=\"odd\"><td>Medium</td><td>+0</td></tr><tr class=\"even\"><td>Small</td><td>+1</td></tr><tr class=\"odd\"><td>Tiny</td><td>+2</td></tr><tr class=\"even\"><td>Diminutive</td><td>+4</td></tr><tr class=\"odd\"><td>Fine</td><td>+8</td></tr></tbody></table>",
+	"name": "Table: Size and Armor Class of Objects",
+	"url": "pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Table Size and Armor Class of Objects",
+	"source": "Core Rulebook",
+	"type": "table",
+	"apply": {
+		"weapon": {
+			"variables": [
+				{"variable": "armor_class", "default": 10}
+			],
+			"modifiers": [
+				{"variable": "armor_class", "formula": "$.Item.acSize($.getVariable(renderable, this, '$.weapon.size'))", "type": "size"},
+			]
+		}
+	}
+}));
+
+
+
+
 
 // Longsword
 Rules.addRule(new GameObject({
@@ -30,111 +259,45 @@ Rules.addRule(new GameObject({
 	"source": "Ultimate Equipment",
 	"type": "item",
 	"subtype": "weapon",
-	"create": {
+	"dependencies": [
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons"
+	],
+	"apply": {
+		"section": {
+			"lists": [
+				{"variable": "name", "operation": "push", "value": "Longsword"},
+				{"variable": "tags", "operation": "push", "value": [
+						"Weapon",
+						"Weapon.Melee",
+						"Weapon.OneHanded",
+						"Weapon.Martial",
+						"Weapon.Slashing",
+						"Weapon.Blade",
+						"Material.Steel",
+						"Material.Metal"
+				]}
+			]
+		},
 		"item": {
-			"variables": [
-				{"variable": "cost", "default": 15},
-				{"variable": "size", "default": "medium"},
-				{"variable": "weight", "default": 4},
+			"modifiers": [
+				{"variable": "weight", "formula": "4"}
 			],
-			"arrays": {
-				"tags": [
-					"Material.Steel",
-					"Material.Metal"
-				]
-			}
 		},
 		"weapon": {
-			"variables": [
-				{"variable": "damage", "default": "1d8"},
-				{"variable": "crit_range", "default": 2},
-				{"variable": "crit_mult", "default": 2},
-				{"variable": "type", "default": "S"},
-				{"variable": "to_hit_modifier", "default": 0},
-				{"variable": "damage_modifier", "default": 0}
+			"modifiers": [
+				{"variable": "cost", "formula": "15"},
+				{"variable": "medium_damage", "formula": "'1d8'"},
+				{"variable": "crit_range", "formula": "1"},
+				{"variable": "crit_mult", "formula": "1"},
+				{"variable": "type", "formula": "'S'"},
+				{"variable": "to_hit_modifier", "formula": "0"},
+				{"variable": "damage_modifier", "formula": "0"}
 			],
-			"arrays": {
-				"tags": [
-					"Weapon",
-					"Weapon.Melee",
-					"Weapon.OneHanded",
-					"Weapon.Martial",
-					"Weapon.Slashing",
-					"Weapon.Blade"
-				]
-			},
-			"dependencies": [
-				"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object"
-			]
-		}
-	}
-}));
-
-Rules.addRule(new GameObject({
-	"body": "<p>Smashing a weapon or shield with a slashing or bludgeoning weapon is accomplished with the sunder combat maneuver (see Combat). Smashing an object is like sundering a weapon or shield, except that your combat maneuver check is opposed by the object's AC. Generally, you can smash an object only with a bludgeoning or slashing weapon.</p><p>Armor Class: Objects are easier to hit than creatures because they don't usually move, but many are tough enough to shrug off some damage from each blow. An object's Armor Class is equal to 10 + its size modifier (see Table: Size and Armor Class of Objects) + its Dexterity modifier. An inanimate object has not only a Dexterity of 0 (&ndash;5 penalty to AC), but also an additional &ndash;2 penalty to its AC. Furthermore, if you take a full-round action to line up a shot, you get an automatic hit with a melee weapon and a +5 bonus on attack rolls with a ranged weapon.</p><p>Hardness: Each object has hardness&mdash;a number that represents how well it resists damage. When an object is damaged, subtract its hardness from the damage. Only damage in excess of its hardness is deducted from the object's hit points (see Table: Common Armor, Weapon, and Shield Hardness and Hit Points, Table: Substance Hardness and Hit Points, and Table: Object Hardness and Hit Points).</p><p>Hit Points: An object's hit point total depends on what it is made of and how big it is (see Table: Common Armor, Weapon, and Shield Hardness and Hit Points, Table: Substance Hardness and Hit Points, and Table: Object Hardness and Hit Points). Objects that take damage equal to or greater than half their total hit points gain the broken condition (see Conditions). When an object's hit points reach 0, it's ruined.</p><p>Very large objects have separate hit point totals for different sections.</p><p>Energy Attacks: Energy attacks deal half damage to most objects. Divide the damage by 2 before applying the object's hardness. Some energy types might be particularly effective against certain objects, subject to GM discretion. For example, fire might do full damage against parchment, cloth, and other objects that burn easily. Sonic might do full damage against glass and crystal objects.</p><p>Ranged Weapon Damage: Objects take half damage from ranged weapons (unless the weapon is a siege engine or something similar). Divide the damage dealt by 2 before applying the object's hardness.</p><p>Ineffective Weapons: Certain weapons just can't effectively deal damage to certain objects. For example, a bludgeoning weapon cannot be used to damage a rope. Likewise, most melee weapons have little effect on stone walls and doors, unless they are designed for breaking up stone, such as a pick or hammer.</p><p>Immunities: Objects are immune to nonlethal damage and to critical hits.</p><p>Magic Armor, Shields, and Weapons: Each +1 of enhancement bonus adds 2 to the hardness of armor, a weapon, or a shield, and +10 to the item's hit points.</p><p>Vulnerability to Certain Attacks: Certain attacks are especially successful against some objects. In such cases, attacks deal double their normal damage and may ignore the object's hardness.</p><p>Damaged Objects: A damaged object remains functional with the broken condition until the item's hit points are reduced to 0, at which point it is destroyed.</p><p>Damaged (but not destroyed) objects can be repaired with the Craft skill and a number of spells.</p><p>Saving Throws: Nonmagical, unattended items never make saving throws. They are considered to have failed their saving throws, so they are always fully affected by spells and other attacks that allow saving throws to resist or negate. An item attended by a character (being grasped, touched, or worn) makes saving throws as the character (that is, using the character's saving throw bonus).</p><p>Magic items always get saving throws. A magic item's Fortitude, Reflex, and Will save bonuses are equal to 2 + half its caster level. An attended magic item either makes saving throws as its owner or uses its own saving throw bonus, whichever is better.</p><p>Animated Objects: Animated objects count as creatures for purposes of determining their Armor Class (do not treat them as inanimate objects).</p>", 
-	"name": "Smashing an Object", 
-	"url": "pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object", 
-	"source": "Core Rulebook", 
-	"type": "section",
-	"dependencies": [
-		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Table Size and Armor Class of Objects",
-		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Breaking Items/Table Common Armor/Weapon/and Shield Hardness and Hit Points"
-	],
-	"apply": {
-		"weapon": {
-			"variables": [
-				{"variable": "armor_class", "default": 10},
-				{"variable": "hit_points", "default": 0},
-				{"variable": "hardness", "default": 0},
-				{"variable": "plus", "default": 0}
-			],
-			"modifiers": [
-				{"variable": "armor_class", "formula": "-5", "type": "dex_mod"},
-				{"variable": "armor_class", "formula": "-2"},
-				{"variable": "hardness", "formula": "$.getVariable(renderable, this, '$.variables.plus') * 2"},
-				{"variable": "hit_points", "formula": "$.getVariable(renderable, this, '$.variables.plus') * 10"}
-			]
 		}
 	}
 }));
 
 
-// Weapon AC Size
-Rules.addRule(new GameObject({
-	"body": "<table id=\"table-7-11-size-and-armor-class-of-objects\"><caption>Table: Size and Armor Class of Objects</caption><thead><tr><th>Size</th><th>AC Modifier</th></tr></thead><tbody><tr class=\"odd\"><td>Colossal</td><td>&ndash;8</td></tr><tr class=\"even\"><td>Gargantuan</td><td>&ndash;4</td></tr><tr class=\"odd\"><td>Huge</td><td>&ndash;2</td></tr><tr class=\"even\"><td>Large</td><td>&ndash;1</td></tr><tr class=\"odd\"><td>Medium</td><td>+0</td></tr><tr class=\"even\"><td>Small</td><td>+1</td></tr><tr class=\"odd\"><td>Tiny</td><td>+2</td></tr><tr class=\"even\"><td>Diminutive</td><td>+4</td></tr><tr class=\"odd\"><td>Fine</td><td>+8</td></tr></tbody></table>",
-	"name": "Table: Size and Armor Class of Objects",
-	"url": "pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Table Size and Armor Class of Objects",
-	"source": "Core Rulebook",
-	"type": "table",
-	"dependencies": [
-	],
-	"apply": {
-		"item": {
-			"modifiers": [
-				{"variable": "armor_class", "formula": "$.Item.acSize($.getVariable(renderable, this, '$.variables.size'))", "type": "size"},
-			]
-		}
-	}
-}));
-
-// Weapon HP/Hardness
-Rules.addRule(new GameObject({
-	"body": "<table id=\"table-7-12-common-armor-weapon-and-shield-hardness-and-hit-points\"><caption>Table: Common Armor, Weapon, and Shield Hardness and Hit Points</caption><thead><tr><th>Weapon or Shield</th><th>Hardness<sup>1</sup></th><th>Hit Points<sup>2, 3</sup></th></tr></thead><tr class=\"odd\"><td>Light blade</td><td>10</td><td>2</td></tr><tr class=\"even\"><td>One-handed blade</td><td>10</td><td>5</td></tr><tr class=\"odd\"><td>Two-handed blade</td><td>10</td><td>10</td></tr><tr class=\"even\"><td>Light metal-hafted weapon</td><td>10</td><td>10</td></tr><tr class=\"odd\"><td>One-handed metal-hafted weapon</td><td>10</td><td>20</td></tr><tr class=\"even\"><td>Light hafted weapon</td><td>5</td><td>2</td></tr><tr class=\"odd\"><td>One-handed hafted weapon</td><td>5</td><td>5</td></tr><tr class=\"even\"><td>Two-handed hafted weapon</td><td>5</td><td>10</td></tr><tr class=\"odd\"><td>Projectile weapon</td><td>5</td><td>5</td></tr><tr class=\"even\"><td>Armor</td><td>special<sup>4</sup></td><td>armor bonus \u00d7 5</td></tr><tr class=\"odd\"><td>Buckler</td><td>10</td><td>5</td></tr><tr class=\"even\"><td>Light wooden shield</td><td>5</td><td>7</td></tr><tr class=\"odd\"><td>Heavy wooden shield</td><td>5</td><td>15</td></tr><tr class=\"even\"><td>Light steel shield</td><td>10</td><td>10</td></tr><tr class=\"odd\"><td>Heavy steel shield</td><td>10</td><td>20</td></tr><tr class=\"even\"><td>Tower shield</td><td>5</td><td>20</td></tr><tfoot><tr><td colspan=\"3\"><sup>1</sup> Add +2 for each +1 enhancement bonus of magic items.</td></tr><tr><td colspan=\"3\"><sup>2</sup> The hp value given is for Medium armor, weapons, and shields. Divide by 2 for each size category of the item smaller than Medium, or multiply it by 2 for each size category larger than Medium.</td></tr><tr><td colspan=\"3\"><sup>3</sup> Add 10 hp for each +1 enhancement bonus of magic items.</td></tr><tr><td colspan=\"3\"><sup>4</sup> Varies by material; see Table: Substance Hardness and Hit Points.</td></tr></tfoot></table>",
-	"name": "Table: Common Armor, Weapon, and Shield Hardness and Hit Points",
-	"url": "pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Breaking Items/Table Common Armor/Weapon/and Shield Hardness and Hit Points",
-	"source": "Core Rulebook",
-	"type": "table",
-	"dependencies": [
-	],
-	"apply": {
-		"weapon": {
-			"modifiers": [
-				{"variable": "hit_points", "formula": "$.Weapon.hitPoints($.getTags(renderable), $.getVariable(renderable, this, '$.variables.size'))"},
-				{"variable": "hardness", "formula": "$.Weapon.hardness($.getTags(renderable), $.getVariable(renderable, this, '$.variables.size'))"},
-			]
-		}
-	}
-}));
 
 // Masterwork Weapons
 Rules.addRule(new GameObject({
@@ -144,16 +307,20 @@ Rules.addRule(new GameObject({
 	"source": "Core Rulebook",
 	"type": "section",
 	"apply": {
-		"weapon": {
-			"tags": [
-				{"operation": "add", "tag": "Masterwork"},
-			],
+		"section": {
+			"lists": [
+				{"variable": "tags", "operation": "push", "value": "Masterwork"},
+				{"variable": "name", "operation": "unshift", "value": "Masterwork"}
+			]
+		},
+		"item": {
 			"modifiers": [
-				{"variable": "to_hit_modifier", "formula": "1", "type": "enhancement"},
 				{"variable": "cost", "formula": "300"}
 			],
-			"name": [
-				{"operation": "unshift", "name": "Masterwork"}
+		},
+		"weapon": {
+			"modifiers": [
+				{"variable": "to_hit_modifier", "formula": "1", "type": "enhancement"}
 			]
 		}
 	}
@@ -168,9 +335,27 @@ Rules.addRule(new GameObject({
 	"type": "section",
 	"dependencies": [
 		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Table Weapons", 
-		"pfsrd://Core Rulebook/Rules/Magic Items/Magic Items/Magic Items and Detect Magic/Item Nature"
+		"pfsrd://Core Rulebook/Rules/Magic Items/Magic Items/Magic Items and Detect Magic/Item Nature",
+		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Hardness and Hit Points"
 	],
 	"apply": {
+		"enchantment": {
+			"context": true,
+			"variables": [
+				{"variable": "plus", "default": 0},
+				{"variable": "effective_plus", "default": 0}
+			],
+		},
+		"section": {
+			"lists": [
+				{"variable": "tags", "operation": "push", "value": [
+						"Magic",
+						"Magic.Plus"
+				]},
+				{"variable": "name", "operation": "remove", "value": "Masterwork"},
+				{"variable": "name", "operation": "unshift", "formula": "'+' + $.getVariable(renderable, this, '$.enchantment.plus');"}
+			]
+		},
 		"weapon": {
 			"conditions": [
 				{
@@ -178,23 +363,28 @@ Rules.addRule(new GameObject({
 					"formula": "$.hasTag(renderable, 'Masterwork')"
 				}
 			],
-			"tags": [
-				{"operation": "add", "tag": "Magic"},
-				{"operation": "add", "tag": "Magic.Plus"},
-			],
-			"variables": [
-				{"variable": "plus", "default": 0},
-				{"variable": "effective_plus", "default": 0}
-			],
 			"modifiers": [
-				{"variable": "plus", "formula": "$.getUrlArg(this, 'plus')"},
-				{"variable": "effective_plus", "formula": "$.getUrlArg(this, 'plus')"},
-				{"variable": "to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.variables.plus')", "type": "enhancement"},
-				{"variable": "damage_modifier", "formula": "$.getVariable(renderable, this, '$.variables.plus')", "type": "enhancement"}
-			],
-			"name": [
-				{"operation": "remove", "name": "Masterwork"},
-				{"operation": "unshift", "formula": "'+' + $.getVariable(renderable, this, '$.variables.plus');"}
+				{"variable": "$.enchantment.plus", "formula": "$.getUrlArg(this, 'plus')"},
+				{"variable": "$.enchantment.effective_plus", "formula": "$.getUrlArg(this, 'plus')"},
+				{"variable": "to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.enchantment.plus')", "type": "enhancement"},
+				{"variable": "damage_modifier", "formula": "$.getVariable(renderable, this, '$.enchantment.plus')", "type": "enhancement"}
+			]
+		}
+	}
+}));
+
+// Magic HP/Hardness
+Rules.addRule(new GameObject({
+	"body": "<p>Each +1 of a magic weapon's enhancement bonus adds +2 to its hardness and +10 to its hit points.</p>",
+	"url": "pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Hardness and Hit Points",
+	"type": "section",
+	"name": "Hardness and Hit Points",
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"modifiers": [
+				{"variable": "hardness", "formula": "$.getVariable(renderable, this, '$.enchantment.plus') * 2"},
+				{"variable": "hit_points", "formula": "$.getVariable(renderable, this, '$.enchantment.plus') * 10"}
 			]
 		}
 	}
@@ -210,21 +400,20 @@ Rules.addRule(new GameObject({
 	"dependencies": [
 	],
 	"apply": {
-		"armor": {
+		"enchantment": {
 			"variables": [
-				{"variable": "magic_aura", "default": []}
-			],
-			"modifiers": [
-				{"variable": "magic_aura", "operation": "push",
+				{"variable": "aura", "default": []},
+			]
+		},
+		"armor": {
+			"lists": [
+				{"variable": "$.enchantment.aura", "operation": "push",
 					"value": {"aura": "Abjuration"}},
 			]
 		},
 		"weapon": {
-			"variables": [
-				{"variable": "magic_aura", "default": []}
-			],
-			"modifiers": [
-				{"variable": "magic_aura", "operation": "push",
+			"lists": [
+				{"variable": "$.enchantment.aura", "operation": "push",
 					"value": {"aura": "Transmutation"}}
 			]
 		}
@@ -241,9 +430,17 @@ Rules.addRule(new GameObject({
 	"dependencies": [
 	],
 	"apply": {
-		"weapon": {
+		"item": {
 			"modifiers": [
-				{"variable": "cost", "formula": "$.Weapon.magicCostPlus($.getVariable(renderable, this, '$.variables.effective_plus'))"}
+				{"variable": "cost", "formula": "$.getVariable(renderable, this, '$.enchantment.cost')"}
+			]
+		},
+		"enchantment": {
+			"variables": [
+				{"variable": "cost", "default": 0}
+			],
+			"modifiers": [
+				{"variable": "cost", "formula": "$.Weapon.magicCostPlus($.getVariable(renderable, this, '$.enchantment.effective_plus'))"}
 			]
 		}
 	}
@@ -283,6 +480,21 @@ Rules.addRule(new GameObject({
 		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions"
 	],
 	"apply": {
+		"enchantment": {
+			"modifiers": [
+				{"variable": "effective_plus", "formula": "1"}
+			],
+			"lists": [
+				{"variable": "aura", "operation": "push",
+					"value": {"strength": "Moderate", "aura": "Transmutation"}}
+			]
+		},
+		"section": {
+			"lists": [
+				{"variable": "tags", "operation": "push", "value": "Keen"},
+				{"variable": "name", "operation": "insert", "value": "Keen"}
+			],
+		},
 		"weapon": {
 			"conditions": [
 				{
@@ -290,17 +502,8 @@ Rules.addRule(new GameObject({
 					"formula": "$.hasTag(renderable, 'Magic.Plus')"
 				}
 			],
-			"tags": [
-				{"operation": "add", "tag": "Keen"}
-			],
 			"modifiers": [
-				{"variable": "crit_range", "formula": "$.getVariable(renderable, this, '$.variables.crit_range')", "bonus_type": "keen"},
-				{"variable": "effective_plus", "formula": "1"},
-				{"variable": "magic_aura", "operation": "push",
-					"value": {"strength": "Moderate", "aura": "Transmutation"}}
-			],
-			"name": [
-				{"operation": "insert", "name": "Keen"}
+				{"variable": "crit_range", "formula": "$.getVariable(renderable, this, '$.weapon.crit_range')", "bonus_type": "keen"}
 			]
 		}
 	}
@@ -317,6 +520,21 @@ Rules.addRule(new GameObject({
 		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions"
 	],
 	"apply": {
+		"enchantment": {
+			"modifiers": [
+				{"variable": "effective_plus", "formula": "1"}
+			],
+			"lists": [
+				{"variable": "aura", "operation": "push",
+					"value": {"strength": "Moderate", "aura": "Evocation"}}
+			]
+		},
+		"section": {
+			"lists": [
+				{"variable": "tags", "operation": "push", "value": "Flaming"},
+				{"variable": "name", "operation": "insert", "value": "Flaming"}
+			],
+		},
 		"weapon": {
 			"conditions": [
 				{
@@ -324,21 +542,13 @@ Rules.addRule(new GameObject({
 					"formula": "$.hasTag(renderable, 'Magic.Plus')"
 				}
 			],
-			"tags": [
-				{"operation": "add", "tag": "Flaming"}
-			],
 			"variables": [
-				{"variable": "bonus_damage", "default": []}
+				{"variable": "bonus_damage", "default": []},
 			],
-			"modifiers": [
-				{"variable": "bonus_damage", "operation": "push",
-					"value": {"damage": "1d6", "type": "flaming"}},
-				{"variable": "effective_plus", "formula": "1"},
-				{"variable": "magic_aura", "operation": "push",
-					"value": {"strength": "Moderate", "aura": "Evocation"}}
-			],
-			"name": [
-				{"operation": "insert", "name": "Flaming"}
+			"lists": [
+				{"variable": "bonus_damage", "operation": "push", "value": [
+					{"damage": "1d6", "type": "flaming"}
+				]}
 			]
 		}
 	}

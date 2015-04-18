@@ -1,7 +1,7 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
+
 var Variable = require('./variable.js');
 var GameObject = require('./game_object.js');
 

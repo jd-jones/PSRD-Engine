@@ -1,74 +1,55 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
+var JSONPath = require('JSONPath');
 
 var Api = require('../api.js');
 var Utils = require('./utils.js');
-var AppliedVariable = require("../models/applied_variable.js");
-var Bonus = require("../models/bonus.js");
+var Modifier = require("../models/modifier.js");
 
-var addVariable = module.exports.addVariable = function(renderable, variable, varName) {
-	var newvar = variable.toJSON();
-	newvar['bonuses'] = [];
-	newvar['sources'] = [];
-	if(variable.has('default')) {
-		newvar.value = variable.get('default');
-		if (Utils.isNumeric(variable.get('default'))) {
-			newvar['bonuses'].push(new Bonus({
-				'value': variable.get('default'),
-				'guid': renderable.base.get('guid'),
-				'formula': variable.get('default')
-			}));
-		} else if (variable.get('default') instanceof Array) {
-			newvar['bonuses'].push(new Bonus({
-				'value': variable.get('default'),
-				'guid': renderable.base.get('guid'),
-				'formula': JSON.stringify(variable.get('default'))
-			}));
-		} else {
-			newvar['bonuses'].push(new Bonus({
-				'value': variable.get('default'),
-				'guid': renderable.base.get('guid'),
-				'formula': "'" + variable.get('default') + "'"
-			}));
-		}
-	}
-	renderable['variables'][varName] = new AppliedVariable(newvar);
-	if('formula' in variable) {
-		updateVariable(
-			renderable, variable, varName, renderable.base.get('guid'));
-	}
-}
-
-function applyBonus(variable, bonus) {
+function applyModifier(variable, modifier) {
 	if(variable.get('value') == null) {
 		variable.set('value', 0);
 	}
-	if(Utils.isNumeric(bonus.get('value')) && Utils.isNumeric(variable.get('value'))) {
+	if(Utils.isNumeric(modifier.get('value')) && Utils.isNumeric(variable.get('value'))) {
 		var total = variable.getValue();
 		if(variable.get('value') != total) {
 			variable.set('value', total);
 		}
 	}
 	else {
-		if(variable.get('value') != bonus.get('value')) {
-			variable.set('value', bonus.get('value'));
+		if(variable.get('value') != modifier.get('value')) {
+			variable.set('value', modifier.get('value'));
 		}
 	}
 }
 
-var updateVariable = module.exports.updateVariable = function(renderable, newvar, name, guid) {
-	var variable = renderable['variables'][name];
+var getVariable = module.exports.getVariable = function(renderable, context, name) {
+	if (name.indexOf('$') == 0) {
+		return JSONPath.eval(renderable, name)[0];
+	} else {
+		return renderable[context][name];
+	}
+}
+
+module.exports.updateVariable = function(renderable, context, newvar, guid) {
+	var variable = getVariable(renderable, context, newvar.get('variable'));
 	if(newvar.has('formula')) {
 		var value = newvar.formula(Api, renderable);
-		var b = {'value': value, 'guid': guid, "formula": newvar.get('formula')};
+		var b = {
+			'value': value,
+			'guid': guid,
+			'context': context,
+			"formula": newvar.get('formula')};
+		if(newvar.has('parameters')) {
+			b.parameters = newvar.get("parameters");
+		}
 		if(newvar.has('type')) {
 			b.type = newvar.get('type');
 		}
-		var bonus = new Bonus(b);
-		variable.get('bonuses').push(bonus);
-		applyBonus(variable, bonus);
+		var modifier = new Modifier(b);
+		variable.get('modifiers').push(modifier);
+		applyModifier(variable, modifier);
 	} else if (newvar.has('operation')) {
 		if(newvar.get('operation') == "push") {
 			variable.get('value').push(newvar.get('value'));
@@ -78,28 +59,32 @@ var updateVariable = module.exports.updateVariable = function(renderable, newvar
 
 var recalculateVariable = module.exports.recalculateVariable = function(renderable, variable) {
 	var total = 0;
-	_.each(variable.get('bonuses'), function(bonus) {
-		if(bonus.has('formula')) {
-			var value = bonus.formula(Api, renderable);
-			if (value != bonus.get('value')) {
-				bonus.set('value', value);
-				applyBonus(variable, bonus);
+	_.each(variable.get('modifiers'), function(modifier) {
+		if(modifier.has('formula')) {
+			var value = modifier.formula(Api, renderable);
+			if (value != modifier.get('value')) {
+				modifier.set('value', value);
+				applyModifier(variable, modifier);
 			}
 		}
 	});
 }
 
-function addVariableApply(renderable, variable) {
+function addVariableApply(renderable, section, variable, context) {
+	if (!(context in renderable)) {
+		renderable[context] = {}
+	}
 	var name = variable.get("variable");
-	if (name in renderable.variables == false) {
-		addVariable(renderable, variable, name);
+
+	if (name in renderable[context] == false) {
+		renderable[context][name] = variable.apply(section.guid, context);
 	}
 }
 
-module.exports.apply = function(renderable, applications) {
+module.exports.apply = function(renderable, section, applications, context) {
 	if("variables" in applications) {
 		_.each(applications.variables, function(varApply) {
-			addVariableApply(renderable, varApply);
+			addVariableApply(renderable, section, varApply, context);
 		});
 	}
 }

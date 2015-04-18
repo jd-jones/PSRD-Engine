@@ -1,7 +1,7 @@
 var $ = require('jquery');
 var Backbone = require('backbone');
-var _ = require('underscore');
 Backbone.$ = $;
+var _ = require('underscore');
 
 module.exports.render = function(renderable) {
 	var results = renderName(renderable);
@@ -10,45 +10,48 @@ module.exports.render = function(renderable) {
 
 function renderName(renderable) {
 	var results = "";
-	var name = renderable.arrays.name.join(seperator=" ");
+	var name = renderable.section.name.get('value').join(seperator=" ");
 	results += "<h1 class='title-1'>" + name + "</h1>\n";
 	return results;
 }
 
 module.exports.renderCalculations = function(renderable) {
 	$('#calculations').empty();
-	if ('variables' in renderable) {
-		calculations = "<H2>Calculated Values</H2>\n";
-		_.each(renderable.variables, function(variable, name) {
-			calculations += "<span class='detail-title'>" + name + ":</span> <span class='detail-value'>";
-//			if ('format' in field) {
-//				if ('pre' in field['format']) {
-//					calculations += field['format']['pre'];
-//				}
-//			}
-			calculations += variable.get('value');
-//			if ('format' in field) {
-//				if ('post' in field['format']) {
-//					calculations += field['format']['post'];
-//				}
-//			}
+	calculations = "<H2>Calculated Values</H2>\n";
+	_.each(renderable.contexts, function(context) {
+		calculations += "<H3>" + context + "</H3>\n";
+		calculations += "<ul>";
+		_.each(renderable[context], function(variable, name) {
+			calculations += "<li><span class='detail-title'>" + name + ":</span> <span class='detail-value'>";
+			var value = variable.get('value');
+			if(typeof value == "object") {
+				calculations += JSON.stringify(value);
+			} else {
+				calculations += value;
+			}
 			calculations += "<ul>";
-			_.each(variable.get('bonuses'), function(bonus) {
+			_.each(variable.get('modifiers'), function(modifier) {
 				calculations += "<li>";
 				var comma = "";
-				_.each(bonus.attributes, function(value, key) {
+				_.each(modifier.attributes, function(value, key) {
 					if (key != 'guid') {
-						calculations += comma + key + ": " + value;
-				}
+						if(typeof value == "object") {
+							calculations += comma + key + ": " + JSON.stringify(value);
+						} else {
+							calculations += comma + key + ": " + value;
+						}
+					}
 					comma = ", ";
 				});
 				calculations += "</li>\n"
 			});
 			calculations += "</ul>\n";
 			calculations += "</span><br>\n";
+			calculations += "</li>\n";
 		});
-		$('#calculations').html(calculations);
-	}
+		calculations += "</ul>\n";
+	});
+	$('#calculations').html(calculations);
 }
 
 // Render functions

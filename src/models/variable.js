@@ -1,7 +1,6 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 
 var Utils = require('../game/utils.js');
 
@@ -22,26 +21,26 @@ var Variable = module.exports = Backbone.Model.extend({
 		});
 		var strValue = null;
 		var sum = {"untyped": 0};
-		_.each(this.get("bonuses"), function(bonus) {
-			if(Utils.isNumeric(bonus.get('value'))) {
-				if(ignore != bonus) {
-					if(bonus.get('value') < 0) {
-						sum["untyped"] += bonus.get("value");
-					} else if (bonus.has('type')) {
-						var type = bonus.get('type');
+		_.each(this.get("modifiers"), function(modifier) {
+			if(Utils.isNumeric(modifier.get('value'))) {
+				if(ignore != modifier) {
+					if(modifier.get('value') < 0) {
+						sum["untyped"] += modifier.get("value");
+					} else if (modifier.has('type')) {
+						var type = modifier.get('type');
 						if (type in sum) {
-							if (bonus.get('value') > sum[type]) {
-								sum[type] = bonus.get('value');
+							if (modifier.get('value') > sum[type]) {
+								sum[type] = modifier.get('value');
 							}
 						} else {
-							sum[type] = bonus.get('value')
+							sum[type] = modifier.get('value')
 						}
 					} else {
-						sum["untyped"] += bonus.get('value');
+						sum["untyped"] += modifier.get('value');
 					}
 				}
 			} else {
-				strValue = bonus.get('value');
+				strValue = modifier.get('value');
 			}
 		});
 

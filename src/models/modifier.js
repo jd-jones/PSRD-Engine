@@ -1,10 +1,9 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 
-var Bonus = module.exports = Backbone.Model.extend({
-	__name__: 'Bonus',
+var Modifier = module.exports = Backbone.Model.extend({
+	__name__: 'Modifier',
 	defaults: {
 		"value": 0,
 		"guid": "",

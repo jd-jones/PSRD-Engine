@@ -1,7 +1,7 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
+
 var Api = require('../api.js');
 
 module.exports.apply = function(renderable, applications) {

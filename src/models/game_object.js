@@ -1,10 +1,13 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
+
 var Variable = require('./variable.js');
-var Name = require('./name.js');
+var ListOperation = require('./list_operation.js');
 var Condition = require('./condition.js');
+var StringVar = require('./string.js');
+var NumberVar = require('./number.js');
+var ListVar = require('./list.js');
 
 var GameObject = module.exports = Backbone.Model.extend({
 	__name__: 'GameObject',
@@ -18,21 +21,6 @@ var GameObject = module.exports = Backbone.Model.extend({
 	},
 
 	initialize: function() {
-		if (this.has("create")) {
-			_.each(this.get("create"), function(create, key) {
-				if ("variables" in create) {
-					var variables = [];
-					_.each(create.variables, function(variable) {
-						if(variable instanceof Variable == false) {
-							variables.push(new Variable(variable));
-						} else {
-							variables.push(variable);
-						}
-					});
-					create.variables = variables;
-				}
-			});
-		}
 		if (this.has("apply")) {
 			_.each(this.get("apply"), function(apply, key) {
 				if ("conditions" in apply) {
@@ -50,6 +38,15 @@ var GameObject = module.exports = Backbone.Model.extend({
 					var variables = [];
 					_.each(apply.variables, function(variable) {
 						if(variable instanceof Variable == false) {
+							if (NumberVar.isValid(variable.default)) {
+								variables.push(new NumberVar(variable));
+							} else if(StringVar.isValid(variable.default)) {
+								variables.push(new StringVar(variable));
+							} else if(ListVar.isValid(variable.default)) {
+								variables.push(new ListVar(variable));
+							} else {
+								throw "Don't recognize variable type: " + JSON.stringify(variable);
+							}
 							variables.push(new Variable(variable));
 						} else {
 							variables.push(variable);
@@ -61,6 +58,7 @@ var GameObject = module.exports = Backbone.Model.extend({
 					var modifiers = [];
 					_.each(apply.modifiers, function(modifier) {
 						if(modifier instanceof Variable == false) {
+							modifier.context = key;
 							modifiers.push(new Variable(modifier));
 						} else {
 							modifiers.push(modifier);
@@ -68,16 +66,17 @@ var GameObject = module.exports = Backbone.Model.extend({
 					});
 					apply.modifiers = modifiers;
 				}
-				if ("name" in apply) {
-					var names = [];
-					_.each(apply.name, function(name) {
-						if(name instanceof Name == false) {
-							names.push(new Name(name));
+				if ("lists" in apply) {
+					var lists = [];
+					_.each(apply.lists, function(listOp) {
+						if(listOp instanceof ListOperation == false) {
+							listOp.context = key;
+							lists.push(new ListOperation(listOp));
 						} else {
-							names.push(name);
+							lists.push(listOp);
 						}
 					});
-					apply.name = names;
+					apply.lists = lists;
 				}
 			});
 		}
@@ -87,28 +86,27 @@ var GameObject = module.exports = Backbone.Model.extend({
 	setUrl: function(newurl) {
 		var parameters = getUrlParameters(newurl);
 		this.set('url', newurl);
-		this.set('parameters', parameters);
-		_.each(this.__variables__, function(variable) {
-			variable.set('parameters', parameters);
-		});
-		if (this.has("apply")) {
-			_.each(this.get("apply"), function(apply, key) {
-				if ("conditions" in apply) {
-					_.each(apply.conditions, function(condition) {
-						condition.set('parameters', parameters);
-					});
-				}
-				if ("modifiers" in apply) {
-					_.each(apply.modifiers, function(modifier) {
-						modifier.set('parameters', parameters);
-					});
-				}
-				if ("name" in apply) {
-					_.each(apply.name, function(name) {
-						name.set('parameters', parameters);
-					});
-				}
-			});
+		if(parameters) {
+			this.set('parameters', parameters);
+			if (this.has("apply")) {
+				_.each(this.get("apply"), function(apply, key) {
+					if ("conditions" in apply) {
+						_.each(apply.conditions, function(condition) {
+							condition.set('parameters', parameters);
+						});
+					}
+					if ("modifiers" in apply) {
+						_.each(apply.modifiers, function(modifier) {
+							modifier.set('parameters', parameters);
+						});
+					}
+					if ("lists" in apply) {
+						_.each(apply.lists, function(listOp) {
+							listOp.set('parameters', parameters);
+						});
+					}
+				});
+			}
 		}
 	}
 });

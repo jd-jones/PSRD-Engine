@@ -1,37 +1,27 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 
 var Utils = require('./utils.js');
-var Conditions = require('./conditions.js');
-var Tags = require('./tags.js');
-var Variables = require('./variables.js');
-var Modifiers = require('./modifiers.js');
-var Names = require('./names.js');
 var Rules = require('../models/rules.js');
+var Conditions = require('./conditions.js');
+var Variables = require('./variables.js');
+var Lists = require('./lists.js');
+
+var Modifiers = require('./modifiers.js');
 
 module.exports.createRenderable = function(base) {
 	var renderable = {
 		"base": base.clone(),
-		"variables": {},
 		"applied": [],
-		"arrays": {
-			"name": [base.get('name')]
-		}
+		"history": [],
+		"contexts": [
+			"section",
+			base.get('type'),
+			base.get('subtype')
+		]
 	}
-	renderable.base.set('guid', Utils.guid());
-	_.each(base.get('create'), function(create, context) {
-		_.each(create.arrays, function(value, key) {
-			renderable.arrays[key] = value;
-		});
-		_.each(create.variables, function(variable) {
-			Variables.addVariable(renderable, variable, variable.get('variable'));
-		});
-		_.each(create.dependencies, function(dependency) {
-			applyGameObjects(renderable, Rules.getRule(dependency));
-		});
-	});
+	applyGameObjects(renderable, base);
 	return renderable;
 }
 
@@ -40,38 +30,112 @@ var applyGameObjects = module.exports.applyGameObjects = function() {
 	var renderable = args.shift();
 	
 	_.each(args, function(realobj) {
+		var toApply = [];
 		var gameobj = realobj.clone();
-		gameobj.guid = Utils.guid();
-		if (gameobj.has('apply')) {
-			var type = renderable.base.get('type');
-			var subtype = renderable.base.get('subtype');
-			if(type in gameobj.get('apply')) {
-				apply(renderable, gameobj.get('apply')[type], gameobj)
-			}
-			if(renderable.base.get('subtype') in gameobj.get('apply')) {
-				apply(renderable, gameobj.get('apply')[subtype], gameobj)
-			}
-			renderable.applied.push(gameobj);
-			if (gameobj.has('dependencies')) {
-				_.each(gameobj.get('dependencies'), function(dependency) {
-					applyGameObjects(renderable, Rules.getRule(dependency));
-				});
-			}
-		}
+		renderable.history.push(realobj.get('url'));
+		
+		toApply = toApply.concat(getDependencies(gameobj));
+
+		applyContext(renderable, toApply);
+		applyConditions(renderable, toApply);
+		applyVariables(renderable, toApply);
+		applyLists(renderable, toApply);
+		applyModifiers(renderable, toApply);
+		applyHousekeeping(renderable, toApply);
 	});
 	return renderable;
 }
 
-function apply(renderable, applications, gameobj) {
-	var results = Conditions.apply(renderable, applications)
-	if(!results.result) {
-		return results;
+function getDependencies(gameobj) {
+	var deps = []
+	gameobj.guid = Utils.guid();
+	deps.push(gameobj);
+	if(gameobj.has('dependencies')) {
+		_.each(gameobj.get('dependencies'), function(dep) {
+			deps = deps.concat(getDependencies(Rules.getRule(dep)))
+		});
 	}
-	Tags.apply(renderable, applications);
-	Variables.apply(renderable, applications);
-	Modifiers.apply(renderable, applications, gameobj);
-	Names.apply(renderable, applications);
+	return deps;
 }
+
+function applyContext(renderable, toApply) {
+	_.each(toApply, function(section) {
+		if (section.has('apply')) {
+			var apply = section.get('apply');
+			_.each(apply, function(context, name) {
+				if('context' in context) {
+					if(context.context) {
+						renderable.contexts.push(name);
+					}
+				}
+			});
+		}
+	});
+}
+
+function applyConditions(renderable, toApply) {
+	failures = [];
+	iterateApplications(renderable, toApply, function(section, context, apply) {
+		var applications = apply[context];
+		var results = Conditions.apply(renderable, applications);
+		if(!results.result) {
+			failures = failures.concat(results.failed);
+		}
+	});
+	if (failures.length > 0) {
+		throw "Failed to apply: " + JSON.stringify(failures);
+	}
+}
+
+function applyVariables(renderable, toApply) {
+	iterateApplications(renderable, toApply, function(section, context, apply) {
+		var applications = apply[context];
+		Variables.apply(renderable, section, applications, context);
+	});
+}
+
+function applyLists(renderable, toApply) {
+	iterateApplications(renderable, toApply, function(section, context, apply) {
+		var applications = apply[context];
+		Lists.apply(renderable, section, applications, context);
+	});
+}
+
+function applyModifiers(renderable, toApply) {
+	iterateApplications(renderable, toApply, function(section, context, apply) {
+		var applications = apply[context];
+		Modifiers.apply(renderable, section, applications, context);
+	});
+}
+
+function applyHousekeeping(renderable, toApply) {
+	_.each(toApply, function(section) {
+		renderable.applied.push(section);
+	});
+}
+
+function iterateApplications(renderable, toApply, fxn) {
+	_.each(toApply, function(section) {
+		if (section.has('apply')) {
+			var apply = section.get('apply');
+			_.each(renderable.contexts, function(context) {
+				if (context in apply) {
+					fxn(section, context, apply);
+				}
+			});
+		}
+	});
+}
+//function apply(renderable, applications, gameobj) {
+//	var results = Conditions.apply(renderable, applications)
+//	if(!results.result) {
+//		return results;
+//	}
+//	Tags.apply(renderable, applications);
+//	Variables.apply(renderable, applications);
+//	Modifiers.apply(renderable, applications, gameobj);
+//	Names.apply(renderable, applications);
+//}
 
 // Old
 /*

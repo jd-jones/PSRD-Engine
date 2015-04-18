@@ -1,14 +1,12 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 var JSONPath = require('JSONPath');
 
-var Dice = require('./api/dice.js');
 var Utils = require('./game/utils.js');
 var Variables = require('./game/variables.js');
+var Lists = require('./game/lists.js');
 
-module.exports.Dice = Dice;
 module.exports.Item = require('./api/item.js');
 module.exports.Weapon = require('./api/weapon.js');
 
@@ -23,37 +21,55 @@ module.exports.ceil = function(num) {
 	return Math.ceil(num);
 }
 
+module.exports.hasListItem = function(renderable, modifier, path, item) {
+	var node = JSONPath.eval(renderable, path)[0];
+	if(!(node)) {
+		return false;
+	}
+	if(node.__name__ == "ListVar") {
+		var value = node.get('value');
+		return _.indexOf(value, item) > -1;
+	} else {
+		throw path + " is not a list variable";
+	}
+}
+
 module.exports.hasTag = function(renderable, tag) {
-	var result = _.indexOf(renderable.arrays.tags, tag) > -1;
+	var list = renderable.section.tags.get('value');
+	var result = _.indexOf(list, tag) > -1;
 	return result
 }
 
-module.exports.getVariable = function(renderable, variable, path) {
+module.exports.getVariable = function(renderable, modifier, path) {
 	var node = JSONPath.eval(renderable, path)[0];
 	if(!(node)) {
 		return 0;
 	}
-	if(variable.__name__ == "Variable") {
-		// To prevent the event being re-added on recalculation.  In that
-		// instance, variable comes in as the Bonus, not the original variable
+	// To prevent the event being re-added on recalculation.  In that
+	// instance, variable comes in as the Modifier, not the original variable
+	if(modifier.__name__ == "Variable") {
 		node.on("change:value", function() {
-			var realvar = renderable.variables[this.get('variable')]
+			var realvar = Variables.getVariable(renderable, modifier.get('context'), modifier.get('variable'))
 			Variables.recalculateVariable(renderable, realvar);
-		}, variable);
+		}, modifier);
+	} else if(modifier.__name__ == "ListOperation") {
+		node.on("change:value", function() {
+			var realvar = Variables.getVariable(renderable, modifier.get('context'), modifier.get('variable'))
+			Lists.recalculateList(renderable, realvar);
+		}, modifier);
 	}
 	var value = node.getValue();
-	if(variable.__name__ == 'Bonus') {
+	if(modifier.__name__ == 'Modifier') {
 		// Prevents infinite increment
-		value = node.getValue({"ignore": variable});
+		value = node.getValue({"ignore": modifier});
+	} else if(modifier.__name__ == 'ListModifier') {
+		// Prevents infinite increment
+		value = node.getValue({"ignore": modifier});
 	}
 	if (Utils.isNumeric(value)) {
 		return +value;
 	}
 	return value;
-}
-
-module.exports.getTags = function(renderable) {
-	return renderable.arrays.tags;
 }
 
 module.exports.getUrlArg = function(modifier, arg) {

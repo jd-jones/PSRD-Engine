@@ -1,7 +1,6 @@
-var $ = require('jquery');
 var Backbone = require('backbone');
+Backbone.$ = require('jquery');
 var _ = require('underscore');
-Backbone.$ = $;
 
 // Utility Functions
 module.exports.underToCapital = function(string) {

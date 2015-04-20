@@ -1,0 +1,176 @@
+/* Global */
+body, img {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body {
+	font-size: 14px;
+	font-family: 'PT Serif', serif;
+}
+
+p {
+	line-height: 1.4em;
+	margin: 15px 0;
+}
+
+h1 {
+	font: normal 32px 'PT Serif', serif;
+	margin: 30px 0 0 0;
+}
+	
+h2 {
+	font: normal 26px 'PT Serif', serif;
+	margin: 30px 0 0 0;
+}
+
+h3 {
+	font: normal 20px 'PT Serif', serif;
+	margin: 30px 0 0 0;
+}
+
+h1 + p, h2 + p, h3 + p {
+	margin: 5px 0 10px 0;
+}
+
+hr {
+  margin: 5px auto;
+  border: 0;
+  border-top: 1px solid #bbb;
+}
+
+sup {
+	line-height: 0;
+}
+
+.nowrap {
+	white-space: nowrap;
+}
+
+/* Tables */
+
+table {
+	font-family: 'Lato', sans;
+	border-collapse: collapse;
+	margin: 10px 0 20px 0;
+	text-align: left;
+}
+
+caption {
+	font: bold 18px 'PT Serif', serif;
+}
+
+th {
+	border-bottom: 2px solid #585858;
+	white-space: nowrap;
+	vertical-align: bottom;
+	font-size: 15px;
+	padding: 5px 10px 5px 10px;
+}
+
+th:first-child {
+	text-align: left;
+}
+
+td {
+	vertical-align: top;
+	white-space: nowrap;
+}
+
+tbody tr:nth-child(odd) td {
+	background: rgba(0, 0, 0, 0.05);
+}
+
+tbody tr {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+tbody th {
+	padding: 15px 10px 5px 10px;
+}
+
+tbody td {
+	padding: 5px 10px 5px 10px;
+}
+
+tbody td:first-child {
+	white-space: nowrap !important;
+}
+
+tfoot {
+	border-top: 2px solid #ccc;
+}
+	
+tfoot td {
+	font-size: 12px;
+	padding: 5px 0 0 0;
+	white-space: normal;
+}
+
+.indent-1 {
+	text-indent: 10px;
+}
+
+.indent-2 {
+	text-indent: 20px;
+}
+
+/* Stat Blocks */
+.monster-header {
+	font: normal 36px 'PT Serif', serif;
+	font-variant: small-caps;
+	font-weight: 600;
+	margin: 20px 0 10px 0;
+}
+
+.stat-block-title, .stat-block-breaker {
+	font: normal 16px 'Lato', sans-serif;
+	text-transform: uppercase;
+}
+
+.stat-block-title {
+	font-weight: bold;
+	letter-spacing: 1px;
+	background-color: black;
+	color: white;
+	margin: 25px 0 5px 0;
+	padding: 2px 0 2px 5px;
+}
+
+.stat-block-breaker {
+	border-top: 1px solid black;
+	border-bottom: 1px solid black;
+	margin: 8px 0;
+}
+
+.flavor-text {
+	font-style: italic;
+}
+
+.stat-block, .stat-block-1, .stat-block-2 {
+	font: normal 13px 'Lato', sans-serif;
+	line-height: 1.5em;
+	margin: 5px 0;
+}
+   	
+.stat-block-2 {
+	text-indent: 25px;
+}
+
+.stat-block-xp {
+	font: normal 14px 'Lato', sans-serif;
+	font-weight: bold;
+	margin: 0;
+}
+	
+.stat-block-cr {
+	float: right;
+	padding: 0 5px 0 0;
+}
+
+.stat-block-rp {
+	padding: 0 0 0 10px;
+	font-weight: bold;
+	font-style: italic;
+}

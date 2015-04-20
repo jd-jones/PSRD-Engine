@@ -3,8 +3,11 @@ var Backbone = require('backbone');
 Backbone.$ = $;
 var _ = require('underscore');
 
+var Api = require('../api.js');
+var Rules = require('../models/rules.js');
+
 module.exports.render = function(renderable) {
-	var results = renderName(renderable);
+	results = renderWeapon(renderable);
 	$('#main').html(results);
 }
 
@@ -53,6 +56,176 @@ module.exports.renderCalculations = function(renderable) {
 	});
 	$('#calculations').html(calculations);
 }
+
+function renderAura(renderable) {
+	var results = "";
+	var aura_strengths = ["Faint", "Moderate", "Strong", "Overwhelming"];
+	var final_aura = {};
+	_.each(renderable.enchantment.aura.get('value'), function(aura) {
+		if(aura['aura'] in final_aura) {
+			var strength = _.indexOf(aura_strengths, final_aura[aura['aura']]);
+			if('strength' in aura) {
+				if(_.indexOf(aura_strengths, aura['strength']) > strength) {
+					final_aura[aura['aura']] = aura['strength'];
+				}
+			}
+		} else {
+			final_aura[aura['aura']] = "";
+			if('strength' in aura) {
+				final_aura[aura['aura']] = aura['strength'];
+			}
+		}
+	});
+	var pieces = [];
+	_.each(final_aura, function(value, key) {
+		pieces.push(value + " " + key);
+	});
+	results += pieces.join(", ");
+	return results;
+}
+function renderWeapon(renderable) {
+	var results = "";
+	results += "<p class='stat-block-title'><b>";
+	results += renderable.section.name.get('value').join(seperator=" ");
+	results += "</b></p>";
+	if ("enchantment" in renderable) {
+		results += "<p class='stat-block-1'><b>Aura</b> ";
+		results += renderAura(renderable);
+		results += ";<b> CL </b>";
+		var cl = renderable.enchantment.caster_level.get('value');
+		if(cl == 0) {
+			results += "&mdash;";
+		} else if (cl == 1) {
+			results += "1st";
+		} else if (cl == 2) {
+			results += "2nd";
+		} else if (cl == 3) {
+			results += "3rd";
+		} else {
+			results += cl + "th";
+		}
+		results += "</p>";
+	} else {
+		results += "<p class='stat-block-1'><b>Aura</b>no aura (nonmagical)";
+		results += ";<b> CL </b>&mdash;</p>";
+	}
+	results += "<p class='stat-block-1'><b>Slot</b> ";
+	results += renderable.item.slot.get('value');
+	results += "; <b>Price</b> ";
+	results += renderable.item.cost.get('value');
+	results += " gp; <b>Weight</b> ";
+	results += renderable.item.weight.get('value');
+	results += " lbs.; <b>Armor Class</b> ";
+	results += renderable.item.armor_class.get('value');
+	results += "; <b>Hit Points</b> ";
+	results += renderable.item.hit_points.get('value');
+	results += "; <b>Hardness</b> ";
+	results += renderable.item.hardness.get('value');
+	results += "</p>";
+	results += renderWeaponTable(renderable);
+	results += "<p class = 'stat-block-breaker'>DESCRIPTION</p>";
+	_.each(renderable.history, function(history) {
+		var section = Rules.getRule(history);
+		if (section.get('name')) {
+			results += "<h3 class='title-3'>" + section.get('name') + "</h3>\n";
+		}
+		if (section.get('body')) {
+			results += section.get('body');
+		}
+	});
+	results += "<p class = 'stat-block-breaker'>Construction</p>";
+	results += "<p class='stat-block-1'><b>Requirements</b> ";
+	var requirements = [];
+	_.each(renderable.enchantment.requirements.get('value'), function(req) {
+		requirements.push(req["name"]);
+	});
+	results += requirements.join(", ");
+	results += "; <b>Skills </b>";
+	results += renderable.enchantment.skill.get('value').join(", ");
+	results += "; <b>Cost </b>";
+	var cost = renderable.item.cost.get('value') / 2;
+	results += cost;
+	results += "gp</p>";
+	return results;
+}
+
+function renderWeaponTable(renderable) {
+	var results = "";
+	var tags = renderable.section.tags.get("value");
+	results += "<table><thead><tr><th>";
+	if(Api.hasTag(renderable, "Weapon.Martial")) {
+		results += "Martial Weapons";
+	} else if (Api.hasTag(renderable, "Weapon.Simple")) {
+		results += "Simple Weapons";
+	} else if (Api.hasTag(renderable, "Weapon.Exotic")) {
+		results += "Exotic Weapons";
+	}
+	results += "</th><th>Cost</th><th>To Hit</th><th>Dmg</th><th>Critical</th><th>Range</th><th>Weight</th><th>Type</th><th>Special</th></thead></tr>";
+	results += "<tbody>";
+	results += "<tr><td colspan='9'><i>";
+	if(Api.hasTag(renderable, "Weapon.Unarmed")) {
+		results += "Unarmed Attacks";
+	} else if (Api.hasTag(renderable, "Weapon.Melee")) {
+		if(Api.hasTag(renderable, "Weapon.Light")) {
+			results += "Light Melee Weapons";
+		} else if (Api.hasTag(renderable, "Weapon.OneHanded")) {
+			results += "One-Handed Melee Weapons";
+		} else if (Api.hasTag(renderable, "Weapon.TwoHanded")) {
+			results += "Two-Handed Melee Weapons";
+		}
+	} else if (Api.hasTag(renderable, "Weapon.Ranged")) {
+		results += "Ranged Weapons";
+	}
+	results += "</i></td></tr>";
+	results += "<tr><td class='indent-1'>" + renderable.section.name.get('value').join(seperator=" ") + "</td>";
+	results += "<td>" + renderable.item.cost.get('value') + "</td>";
+	var thb = renderable.weapon.to_hit_modifier.get('value');
+	if (thb != 0) {
+		results += "<td>";
+		if (thb > 0) {
+			results += "+";
+		}
+		results += thb;
+		results += "</td>"
+	}
+	results += "<td>" + renderable.weapon.damage.get('value');
+	var db = renderable.weapon.damage_modifier.get('value');
+	if (db > 0) {
+		results += "+";
+	}
+	if (db != 0) {
+		results += db;
+	}
+	results += "</td>";
+	results += "<td>";
+	var crit_range = renderable.weapon.crit_range.get('value');
+	if(crit_range > 1) {
+		var bottom = 20 - crit_range + 1;
+		results += bottom + "&ndash;20/";
+	}
+	results += "&times;" + renderable.weapon.crit_mult.get('value') + "</td>";
+	var range = renderable.weapon.range.get('value');
+	if (range == 0) {
+		range = "&mdash;";
+	}
+	results += "<td>" + range + "</td>";
+	results += "<td>" + renderable.item.weight.get('value') + " lbs.</td>";
+	results += "<td>" + renderable.weapon.type.get('value') + "</td>";
+	var special = renderable.weapon.special.get('value').slice(0);
+	if("bonus_damage" in renderable.weapon) {
+		_.each(renderable.weapon.bonus_damage.get('value'), function(dam) {
+			special.push(dam['type'] + ": " + dam["damage"]);
+		});
+	}
+	if (special.length == 0) {
+		special = "&mdash;";
+	} else {
+		special = special.join(", ");
+	}
+	results += "<td>" + special + "</td></tr><tbody></table>";
+	return results;
+}
+
 
 // Render functions
 

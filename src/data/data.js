@@ -30,9 +30,16 @@ Rules.addRule(new GameObject({
 				{"variable": "name", "default": []}
 			]
 		},
-		"weapon": {
+		"item": {
 			"variables": [
 				{"variable": "size", "default": "medium"},
+				{"variable": "slot", "default": "none"}
+			]
+		},
+		"weapon": {
+			"variables": [
+				{"variable": "to_hit_modifier", "default": 0},
+				{"variable": "damage_modifier", "default": 0}
 			]
 		}
 	}
@@ -59,7 +66,7 @@ Rules.addRule(new GameObject({
 				{"variable": "cost", "default": 0}
 			],
 			"modifiers": [
-				{"variable": "cost", "formula": "$.Weapon.sizeCost($.getVariable(renderable, this, '$.weapon.cost'), $.getVariable(renderable, this, '$.weapon.size'))"}
+				{"variable": "cost", "formula": "$.Weapon.sizeCost($.getVariable(renderable, this, '$.weapon.cost'), $.getVariable(renderable, this, '$.item.size'))"}
 			]
 		}
 	}
@@ -79,7 +86,7 @@ Rules.addRule(new GameObject({
 				{"variable": "damage", "default": "-"}
 			],
 			"modifiers": [
-				{"variable": "damage", "formula": "$.Weapon.sizeDamage($.getVariable(renderable, this, '$.weapon.medium_damage'), $.getVariable(renderable, this, '$.weapon.size'))"}
+				{"variable": "damage", "formula": "$.Weapon.sizeDamage($.getVariable(renderable, this, '$.weapon.medium_damage'), $.getVariable(renderable, this, '$.item.size'))"}
 			]
 		}
 	}
@@ -133,7 +140,7 @@ Rules.addRule(new GameObject({
 		},
 		"weapon": {
 			"modifiers": [
-				{"variable": "$.item.weight", "formula": "$.Weapon.sizeWeight($.getVariable(renderable, this, '$.item.weight'), $.getVariable(renderable, this, '$.weapon.size'))"}
+				{"variable": "$.item.weight", "formula": "$.Weapon.sizeWeight($.getVariable(renderable, this, '$.item.weight'), $.getVariable(renderable, this, '$.item.size'))"}
 			]
 		}
 	}
@@ -164,7 +171,7 @@ Rules.addRule(new GameObject({
 	"source": "Core Rulebook",
 	"apply": {
 		"weapon": {
-			"variable": [
+			"variables": [
 				{"variable": "special", "default": []}
 			]
 		}
@@ -185,8 +192,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"modifiers": [
-				{"variable": "armor_class", "formula": "-5", "type": "dex_mod"},
-				{"variable": "armor_class", "formula": "-2"},
+				{"variable": "$.item.armor_class", "formula": "-5", "type": "dex_mod"},
+				{"variable": "$.item.armor_class", "formula": "-2"},
 			]
 		}
 	}
@@ -200,14 +207,16 @@ Rules.addRule(new GameObject({
 	"source": "Core Rulebook",
 	"type": "table",
 	"apply": {
-		"weapon": {
+		"item": {
 			"variables": [
 				{"variable": "hit_points", "default": 0},
 				{"variable": "hardness", "default": 0},
 			],
+		},
+		"weapon": {
 			"modifiers": [
-				{"variable": "hit_points", "formula": "$.Weapon.hitPoints(renderable, $.getVariable(renderable, this, '$.weapon.size'))"},
-				{"variable": "hardness", "formula": "$.Weapon.hardness(renderable, $.getVariable(renderable, this, '$.weapon.size'))"},
+				{"variable": "$.item.hit_points", "formula": "$.Weapon.hitPoints(renderable, $.getVariable(renderable, this, '$.item.size'))"},
+				{"variable": "$.item.hardness", "formula": "$.Weapon.hardness(renderable, $.getVariable(renderable, this, '$.item.size'))"},
 			]
 		}
 	}
@@ -221,12 +230,14 @@ Rules.addRule(new GameObject({
 	"source": "Core Rulebook",
 	"type": "table",
 	"apply": {
-		"weapon": {
+		"item": {
 			"variables": [
 				{"variable": "armor_class", "default": 10}
-			],
+			]
+		},
+		"weapon": {
 			"modifiers": [
-				{"variable": "armor_class", "formula": "$.Item.acSize($.getVariable(renderable, this, '$.weapon.size'))", "type": "size"},
+				{"variable": "$.item.armor_class", "formula": "$.Item.acSize($.getVariable(renderable, this, '$.item.size'))", "type": "size"},
 			]
 		}
 	}
@@ -238,7 +249,7 @@ Rules.addRule(new GameObject({
 
 // Longsword
 Rules.addRule(new GameObject({
-	"text": "<p class=\"stat-block\">This sword is about 3-1/2 feet in length.</p>",
+	"body": "<p class=\"stat-block\">This sword is about 3-1/2 feet in length.</p>",
 	"name": "Longsword",
 	"weight": "4 lbs.",
 	"url": "pfsrd://Ultimate Equipment/Rules/Arms And Armor/Weapons/Weapon Descriptions/Longsword",
@@ -326,6 +337,28 @@ Rules.addRule(new GameObject({
 	}
 }));
 
+// Creating Magic Weapons
+Rules.addRule(new GameObject({
+	"body": "<p>To create a magic weapon, a character needs a heat source and some iron, wood, or leatherworking tools. She also needs a supply of materials, the most obvious being the weapon or the pieces of the weapon to be assembled. Only a masterwork weapon can become a magic weapon, and the masterwork cost is added to the total cost to determine final market value. Additional magic supplies costs for the materials are subsumed in the cost for creating the magic weapon&mdash;half the base price of the item based upon the item's total effective bonus.</p><p>Creating a magic weapon has a special prerequisite: The creator's caster level must be at least three times the enhancement bonus of the weapon. If an item has both an enhancement bonus and a special ability, the higher of the two caster level requirements must be met. A magic weapon must have at least a +1 enhancement bonus to have any melee or ranged special weapon abilities.</p><p>If spells are involved in the prerequisites for making the weapon, the creator must have prepared the spells to be cast (or must know the spells, in the case of a sorcerer or bard) but need not provide any material components or focuses the spells require. The act of working on the weapon triggers the prepared spells, making them unavailable for casting during each day of the weapon's creation. (That is, those spell slots are expended from the caster's currently prepared spells, just as if they had been cast.)</p><p>At the time of creation, the creator must decide if the weapon glows or not as a side-effect of the magic imbued within it. This decision does not affect the price or the creation time, but once the item is finished, the decision is binding.</p><p>Creating magic double-headed weapons is treated as creating two weapons when determining cost, time, and special abilities.</p><p>Creating some weapons may entail other prerequisites beyond or other than spellcasting. See the individual descriptions for details.</p><p>Crafting a magic weapon requires 1 day for each 1,000 gp value of the base price.</p><p><b>Item Creation Feat Required</b>: Craft Magic Arms and Armor.</p><p><b>Skill Used in Creation</b>: Spellcraft, Craft (bows) (for magic bows and arrows), or Craft (weapons) (for all other weapons).</p>", 
+	"name": "Creating Magic Weapons", 
+	"url": "pfsrd://Core Rulebook/Rules/Magic Items/Magic Item Creation/Creating Magic Weapons", 
+	"type": "section", 
+	"source": "Core Rulebook",
+	"apply": {
+		"enchantment": {
+			"variables": [
+				{"variable": "caster_level", "default": 0},
+				{"variable": "skill", "default": []},
+				{"variable": "requirements", "default": []}
+			],
+			"lists": [
+				{"variable": "skill", "operation": "push", "value": ["Spellcraft", "Craft (weapons)", "Craft (bows)"]},
+				{"variable": "requirements", "operation": "push", "value": {"type": "feat", "name": "Craft Magic Arms and Armor"}}
+			]
+		}
+	}
+}));
+
 //Magic Plus
 Rules.addRule(new GameObject({
 	"body": "<p>A magic weapon is enhanced to strike more truly and deliver more damage. Magic weapons have enhancement bonuses ranging from +1 to +5. They apply these bonuses to both attack and damage rolls when used in combat. All magic weapons are also masterwork weapons, but their masterwork bonuses on attack rolls do not stack with their enhancement bonuses on attack rolls.</p><p>Weapons come in two basic categories: melee and ranged. Some of the weapons listed as melee weapons can also be used as ranged weapons. In this case, their enhancement bonuses apply to both melee and ranged attacks.</p><p>Some magic weapons have special abilities. Special abilities count as additional bonuses for determining the market value of the item, but do not modify attack or damage bonuses (except where specifically noted). A single weapon cannot have a modified bonus (enhancement bonus plus special ability bonus equivalents, including those from character abilities and spells) higher than +10. A weapon with a special ability must also have at least a +1 enhancement bonus. Weapons cannot possess the same special ability more than once.</p><p>Weapons or ammunition can be made of an unusual material. Roll d%: 01&ndash;95 indicates that the item is of a standard sort, and 96&ndash;100 indicates that it is made of a special material (see Equipment).</p>",
@@ -334,6 +367,8 @@ Rules.addRule(new GameObject({
 	"source": "Core Rulebook", 
 	"type": "section",
 	"dependencies": [
+		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Caster Level for Weapons", 
+		"pfsrd://Core Rulebook/Rules/Magic Items/Magic Item Creation/Creating Magic Weapons", 
 		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Table Weapons", 
 		"pfsrd://Core Rulebook/Rules/Magic Items/Magic Items/Magic Items and Detect Magic/Item Nature",
 		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Hardness and Hit Points"
@@ -373,6 +408,22 @@ Rules.addRule(new GameObject({
 	}
 }));
 
+// Caster Level
+Rules.addRule(new GameObject({
+	"body": "<p>The caster level of a weapon with a special ability is given in the item description. For an item with only an enhancement bonus and no other abilities, the caster level is three times the enhancement bonus. If an item has both an enhancement bonus and a special ability, the higher of the two caster level requirements must be met.</p>", 
+	"url": "pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Caster Level for Weapons", 
+	"type": "section", 
+	"name": "Caster Level for Weapons", 
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"modifiers": [
+				{"variable": "$.enchantment.caster_level", "formula": "$.getVariable(renderable, this, '$.enchantment.plus') * 3", "type": "caster_level"}
+			]
+		}
+	}
+}));
+
 // Magic HP/Hardness
 Rules.addRule(new GameObject({
 	"body": "<p>Each +1 of a magic weapon's enhancement bonus adds +2 to its hardness and +10 to its hit points.</p>",
@@ -383,8 +434,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"modifiers": [
-				{"variable": "hardness", "formula": "$.getVariable(renderable, this, '$.enchantment.plus') * 2"},
-				{"variable": "hit_points", "formula": "$.getVariable(renderable, this, '$.enchantment.plus') * 10"}
+				{"variable": "$.item.hardness", "formula": "$.getVariable(renderable, this, '$.enchantment.plus') * 2"},
+				{"variable": "$.item.hit_points", "formula": "$.getVariable(renderable, this, '$.enchantment.plus') * 10"}
 			]
 		}
 	}
@@ -482,11 +533,13 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"enchantment": {
 			"modifiers": [
-				{"variable": "effective_plus", "formula": "1"}
+				{"variable": "effective_plus", "formula": "1"},
+				{"variable": "caster_level", "formula": "10", "type": "caster_level"}
 			],
 			"lists": [
 				{"variable": "aura", "operation": "push",
-					"value": {"strength": "Moderate", "aura": "Transmutation"}}
+					"value": {"strength": "Moderate", "aura": "Transmutation"}},
+				{"variable": "requirements", "operation": "push", "value": {"type": "spell", "name": "Keen Edge"}}
 			]
 		},
 		"section": {
@@ -522,11 +575,13 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"enchantment": {
 			"modifiers": [
-				{"variable": "effective_plus", "formula": "1"}
+				{"variable": "effective_plus", "formula": "1"},
+				{"variable": "caster_level", "formula": "10", "type": "caster_level"}
 			],
 			"lists": [
 				{"variable": "aura", "operation": "push",
-					"value": {"strength": "Moderate", "aura": "Evocation"}}
+					"value": {"strength": "Moderate", "aura": "Evocation"}},
+				{"variable": "requirements", "operation": "push", "value": {"type": "spell", "name": "Fireball"}}
 			]
 		},
 		"section": {

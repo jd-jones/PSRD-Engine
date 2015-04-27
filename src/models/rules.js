@@ -1,6 +1,8 @@
 var Backbone = require('backbone');
 Backbone.$ = require('jquery');
 var _ = require('underscore');
+var GameObject = require('../models/game_object.js');
+var Utils = require('../game/utils.js');
 
 var RulesObject = Backbone.Model.extend({
 	__name__: 'Rules',
@@ -15,11 +17,21 @@ var RulesObject = Backbone.Model.extend({
 	getRule: function(url) {
 		if (url.indexOf('?') >-1) {
 			var newurl = url.split('?')[0];
-			var rule = this.get('rules')[newurl].clone();
+			var rule = new GameObject(Utils.deepClone(this.get('rules')[newurl]));
 			rule.set('url', url);
 			return rule;
 		}
-		return this.get('rules')[url];
+		return new GameObject(Utils.deepClone(this.get('rules')[url]));
+	},
+
+	hasRule: function(url) {
+		if (url.indexOf('?') >-1) {
+			var newurl = url.split('?')[0];
+			if (newurl in this.get('rules')) {
+				return true
+			}
+		}
+		return (url in this.get('rules'));
 	}
 });
 

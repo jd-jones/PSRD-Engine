@@ -6,12 +6,13 @@ var JSONPath = require('JSONPath');
 var Api = require('../api.js');
 var ListModifier = require("../models/list_modifier.js");
 var ListVar = require("../models/list.js");
+var Utils = require('../game/utils.js');
 
 function createModifier(renderable, section, context, apply) {
-	var mod = apply.toJSON();
+	var mod = Utils.deepClone(apply);
 	mod.value = getValue(renderable, apply);
 	mod.guid = section.guid;
-	mod.context = section.context;
+	mod.context = context;
 	return new ListModifier(mod);
 }
 
@@ -29,7 +30,6 @@ function getValue(renderable, apply) {
 	} else if (apply.has('value')) {
 		return apply.get('value');
 	}
-	throw "List apply has neither a value or a formula";
 }
 
 var recalculateList = module.exports.recalculateList = function(renderable, list) {

@@ -35,3 +35,6 @@ module.exports.guid = (function() {
 	};
 })();
 
+module.exports.deepClone = function(obj) {
+	return JSON.parse(JSON.stringify(obj));
+}

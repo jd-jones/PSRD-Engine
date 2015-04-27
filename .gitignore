@@ -1,3 +1,5 @@
 .*.sw[po]
 build
 node_modules
+coverage/
+npm-debug.log

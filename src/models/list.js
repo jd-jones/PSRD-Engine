@@ -4,6 +4,7 @@ var _ = require('underscore');
 
 var Variable = require("./variable.js");
 var ListModifier = require("./list_modifier.js");
+var Utils = require('../game/utils.js');
 
 var ListVar = module.exports = Variable.extend({
 	__name__: 'ListVar',
@@ -35,11 +36,11 @@ var ListVar = module.exports = Variable.extend({
 		newvar['modifiers'] = [];
 		newvar['sources'] = [];
 		if(this.has('default')) {
-			newvar.value = this.get('default');
+			newvar.value = Utils.deepClone(this.get('default'));
 			if (ListVar.isValid(this.get('default'))) {
 				newvar['modifiers'].push(new ListModifier({
 					'operation': 'create',
-					'value': this.get('default').slice(0),
+					'value': Utils.deepClone(this.get('default')),
 					'guid': guid,
 					'context': context,
 					'parameters': this.get('parameters')
@@ -85,7 +86,7 @@ ListVar.addModifier = function(list, modifier) {
 			ListVar.push(list, modifier);
 			break;
 		case "pop":
-			ListVar.push(list);
+			ListVar.pop(list);
 			break;
 		case "insert":
 			ListVar.insert(list, modifier);

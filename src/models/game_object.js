@@ -47,7 +47,6 @@ var GameObject = module.exports = Backbone.Model.extend({
 							} else {
 								throw "Don't recognize variable type: " + JSON.stringify(variable);
 							}
-							variables.push(new Variable(variable));
 						} else {
 							variables.push(variable);
 						}

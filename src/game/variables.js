@@ -50,10 +50,6 @@ module.exports.updateVariable = function(renderable, context, newvar, guid) {
 		var modifier = new Modifier(b);
 		variable.get('modifiers').push(modifier);
 		applyModifier(variable, modifier);
-	} else if (newvar.has('operation')) {
-		if(newvar.get('operation') == "push") {
-			variable.get('value').push(newvar.get('value'));
-		}
 	}
 }
 

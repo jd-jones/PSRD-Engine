@@ -12,7 +12,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": ["A", "B"]}
+				{"variable": "list", "type": "list", "default": ["A", "B"]}
 			],
 			"lists": [
 				{"variable": "list", "operation": "shift"}
@@ -38,7 +38,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": ["A", "B"]}
+				{"variable": "list", "type": "list", "default": ["A", "B"]}
 			],
 			"lists": [
 				{"variable": "list", "operation": "unshift", "value": "C"}
@@ -64,7 +64,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": ["A", "B"]}
+				{"variable": "list", "type": "list", "default": ["A", "B"]}
 			],
 			"lists": [
 				{"variable": "list", "operation": "push", "value": "C"}
@@ -90,7 +90,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": ["A", "B"]}
+				{"variable": "list", "type": "list", "default": ["A", "B"]}
 			],
 			"lists": [
 				{"variable": "list", "operation": "pop"}
@@ -116,7 +116,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": ["A", "B", "C"]}
+				{"variable": "list", "type": "list", "default": ["A", "B", "C"]}
 			],
 			"lists": [
 				{"variable": "list", "operation": "insert", "value": "D"},
@@ -143,7 +143,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": ["A", "B", "C", "D", "E"]}
+				{"variable": "list", "type": "list", "default": ["A", "B", "C", "D", "E"]}
 			],
 			"lists": [
 				{"variable": "list", "operation": "remove", "value": "A"},
@@ -170,8 +170,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": ["A", "B"]},
-				{"variable": "data", "default": "C"}
+				{"variable": "list", "type": "list", "default": ["A", "B"]},
+				{"variable": "data", "type": "string", "default": "C"}
 			],
 			"lists": [
 				{"variable": "list", "operation": "push", "formula": "$.getVariable(renderable, this, '$.section.data')"}

@@ -12,8 +12,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "number", "default": 0},
-				{"variable": "data", "default": 1}
+				{"variable": "number", "type": "number"},
+				{"variable": "data", "type": "number", "default": 1}
 			],
 			"modifiers": [
 				{"variable": "number", "formula": "$.getUrlArg(this, 'plus')"},

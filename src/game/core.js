@@ -7,6 +7,7 @@ var Rules = require('../models/rules.js');
 var Conditions = require('./conditions.js');
 var Variables = require('./variables.js');
 var Lists = require('./lists.js');
+var Sets = require('./sets.js');
 var GameObject = require('../models/game_object.js');
 
 var Modifiers = require('./modifiers.js');
@@ -50,6 +51,7 @@ var applyGameObjects = module.exports.applyGameObjects = function() {
 		applyConditions(renderable, toApply);
 		applyVariables(renderable, toApply);
 		applyLists(renderable, toApply);
+		applySets(renderable, toApply);
 		applyModifiers(renderable, toApply);
 		applyHousekeeping(renderable, toApply);
 	});
@@ -108,6 +110,13 @@ function applyLists(renderable, toApply) {
 	iterateApplications(renderable, toApply, function(section, context, apply) {
 		var applications = apply[context];
 		Lists.apply(renderable, section, applications, context);
+	});
+}
+
+function applySets(renderable, toApply) {
+	iterateApplications(renderable, toApply, function(section, context, apply) {
+		var applications = apply[context];
+		Sets.apply(renderable, section, applications, context);
 	});
 }
 

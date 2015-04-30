@@ -3,8 +3,41 @@ Backbone.$ = require('jquery');
 var _ = require('underscore');
 
 var GameObject = require('../models/game_object.js');
-var Spell = require('../models/spell.js');
 var Rules = require('../models/rules.js');
+
+Rules.addRule(new GameObject({
+	"body": "<p id=\"ammunition\">Projectile weapons use ammunition: arrows (for bows), bolts (for crossbows), darts (for blowguns), or sling bullets (for slings and halfling sling staves). When using a bow, a character can draw ammunition as a free action; crossbows and slings require an action for reloading (as noted in their descriptions). Generally speaking, ammunition that hits its target is destroyed or rendered useless, while ammunition that misses has a 50% chance of being destroyed or lost.</p><p>Although they are thrown weapons, shuriken are treated as ammunition for the purposes of drawing them, crafting masterwork or otherwise special versions of them, and what happens to them after they are thrown.</p>", 
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Melee and Ranged Weapons/Ammunition", 
+	"type": "section", 
+	"name": "Ammunition", 
+	"source": "Core Rulebook",
+	"dependencies": [
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Cost",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Weight",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Special",
+		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object"
+	],
+	"apply": {
+		"section": {
+			"variables": [
+				{"variable": "tags", "type": "set"},
+				{"variable": "name", "type": "list"}
+			]
+		},
+		"item": {
+			"variables": [
+				{"variable": "size", "type": "string", "default": "medium"},
+				{"variable": "slot", "type": "string", "default": "none"}
+			]
+		},
+		"ammunition": {
+			"variables": [
+				{"variable": "to_hit_modifier", "type": "number"},
+				{"variable": "damage_modifier", "type": "number"}
+			]
+		}
+	}
+}));
 
 // "pfsrd://Core Rulebook/Rules/Equipment/Weapons?children=false",
 Rules.addRule(new GameObject({
@@ -26,20 +59,20 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "tags", "default": []},
-				{"variable": "name", "default": []}
+				{"variable": "tags", "type": "set"},
+				{"variable": "name", "type": "list"}
 			]
 		},
 		"item": {
 			"variables": [
-				{"variable": "size", "default": "medium"},
-				{"variable": "slot", "default": "none"}
+				{"variable": "size", "type": "string", "default": "medium"},
+				{"variable": "slot", "type": "string", "default": "none"}
 			]
 		},
 		"weapon": {
 			"variables": [
-				{"variable": "to_hit_modifier", "default": 0},
-				{"variable": "damage_modifier", "default": 0}
+				{"variable": "to_hit_modifier", "type": "number"},
+				{"variable": "damage_modifier", "type": "number"}
 			]
 		}
 	}
@@ -55,7 +88,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"item": {
 			"variables": [
-				{"variable": "cost", "default": 0}
+				{"variable": "cost", "type": "number"}
 			],
 			"modifiers": [
 				{"variable": "cost", "formula": "$.getVariable(renderable, this, '$.weapon.cost')"}
@@ -63,7 +96,7 @@ Rules.addRule(new GameObject({
 		},
 		"weapon": {
 			"variables": [
-				{"variable": "cost", "default": 0}
+				{"variable": "cost", "type": "number"}
 			],
 			"modifiers": [
 				{"variable": "cost", "formula": "$.Weapon.sizeCost($.getVariable(renderable, this, '$.weapon.cost'), $.getVariable(renderable, this, '$.item.size'))"}
@@ -82,8 +115,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"variables": [
-				{"variable": "medium_damage", "default": "-"},
-				{"variable": "damage", "default": "-"}
+				{"variable": "medium_damage", "type": "string", "default": "-"},
+				{"variable": "damage", "type": "string", "default": "-"}
 			],
 			"modifiers": [
 				{"variable": "damage", "formula": "$.Weapon.sizeDamage($.getVariable(renderable, this, '$.weapon.medium_damage'), $.getVariable(renderable, this, '$.item.size'))"}
@@ -102,8 +135,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"variables": [
-				{"variable": "crit_range", "default": 1},
-				{"variable": "crit_mult", "default": 1}
+				{"variable": "crit_range", "type": "number", "default": 1},
+				{"variable": "crit_mult", "type": "number", "default": 1}
 			]
 		}
 	}
@@ -119,7 +152,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"variables": [
-				{"variable": "range", "default": 0}
+				{"variable": "range", "type": "number"}
 			]
 		}
 	}
@@ -135,7 +168,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"item": {
 			"variables": [
-				{"variable": "weight", "default": 0}
+				{"variable": "weight", "type": "number"}
 			]
 		},
 		"weapon": {
@@ -156,7 +189,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"variables": [
-				{"variable": "type", "default": ""},
+				{"variable": "type", "type": "set"},
 			]
 		}
 	}
@@ -172,7 +205,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"variables": [
-				{"variable": "special", "default": []}
+				{"variable": "special", "type": "list"}
 			]
 		}
 	}
@@ -190,7 +223,7 @@ Rules.addRule(new GameObject({
 		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Breaking Items/Table Common Armor/Weapon/and Shield Hardness and Hit Points"
 	],
 	"apply": {
-		"weapon": {
+		"item": {
 			"modifiers": [
 				{"variable": "$.item.armor_class", "formula": "-5", "type": "dex_mod"},
 				{"variable": "$.item.armor_class", "formula": "-2"},
@@ -209,8 +242,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"item": {
 			"variables": [
-				{"variable": "hit_points", "default": 0},
-				{"variable": "hardness", "default": 0},
+				{"variable": "hit_points", "type": "number"},
+				{"variable": "hardness", "type": "number"},
 			],
 		},
 		"weapon": {
@@ -222,7 +255,7 @@ Rules.addRule(new GameObject({
 	}
 }));
 
-// Weapon AC Size
+// Item AC Size
 Rules.addRule(new GameObject({
 	"body": "<table id=\"table-7-11-size-and-armor-class-of-objects\"><caption>Table: Size and Armor Class of Objects</caption><thead><tr><th>Size</th><th>AC Modifier</th></tr></thead><tbody><tr class=\"odd\"><td>Colossal</td><td>&ndash;8</td></tr><tr class=\"even\"><td>Gargantuan</td><td>&ndash;4</td></tr><tr class=\"odd\"><td>Huge</td><td>&ndash;2</td></tr><tr class=\"even\"><td>Large</td><td>&ndash;1</td></tr><tr class=\"odd\"><td>Medium</td><td>+0</td></tr><tr class=\"even\"><td>Small</td><td>+1</td></tr><tr class=\"odd\"><td>Tiny</td><td>+2</td></tr><tr class=\"even\"><td>Diminutive</td><td>+4</td></tr><tr class=\"odd\"><td>Fine</td><td>+8</td></tr></tbody></table>",
 	"name": "Table: Size and Armor Class of Objects",
@@ -232,10 +265,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"item": {
 			"variables": [
-				{"variable": "armor_class", "default": 10}
-			]
-		},
-		"weapon": {
+				{"variable": "armor_class", "type": "number", "default": 10}
+			],
 			"modifiers": [
 				{"variable": "$.item.armor_class", "formula": "$.Item.acSize($.getVariable(renderable, this, '$.item.size'))", "type": "size"},
 			]
@@ -275,9 +306,8 @@ Rules.addRule(new GameObject({
 	],
 	"apply": {
 		"section": {
-			"lists": [
-				{"variable": "name", "operation": "push", "value": "Longsword"},
-				{"variable": "tags", "operation": "push", "value": [
+			"sets": [
+				{"variable": "tags", "operation": "union", "value": [
 						"Weapon",
 						"Weapon.Melee",
 						"Weapon.OneHanded",
@@ -287,6 +317,9 @@ Rules.addRule(new GameObject({
 						"Material.Steel",
 						"Material.Metal"
 				]}
+			],
+			"lists": [
+				{"variable": "name", "operation": "push", "value": "Longsword"}
 			]
 		},
 		"item": {
@@ -295,12 +328,14 @@ Rules.addRule(new GameObject({
 			],
 		},
 		"weapon": {
+			"sets": [
+				{"variable": "type", "operation": "add", "value": "S"},
+			],
 			"modifiers": [
 				{"variable": "cost", "formula": "15"},
 				{"variable": "medium_damage", "formula": "'1d8'"},
 				{"variable": "crit_range", "formula": "1"},
 				{"variable": "crit_mult", "formula": "1"},
-				{"variable": "type", "formula": "'S'"},
 				{"variable": "to_hit_modifier", "formula": "0"},
 				{"variable": "damage_modifier", "formula": "0"}
 			],
@@ -308,7 +343,69 @@ Rules.addRule(new GameObject({
 	}
 }));
 
-
+// Longbow, Composite
+Rules.addRule(new GameObject({
+	"body": "<p>You need at least two hands to use a bow, regardless of its size. You can use a composite longbow while mounted. All composite bows are made with a particular strength rating (that is, each requires a minimum Strength modifier to use with proficiency). If your Strength bonus is less than the strength rating of the composite bow, you can't effectively use it, so you take a &ndash;2 penalty on attacks with it. The default composite longbow requires a Strength modifier of +0 or higher to use with proficiency. A composite longbow can be made with a high strength rating to take advantage of an above-average Strength score; this feature allows you to add your Strength bonus to damage, up to the maximum bonus indicated for the bow. Each point of Strength bonus granted by the bow adds 100 gp to its cost. If you have a penalty for low Strength, apply it to damage rolls when you use a composite longbow.</p><p>For purposes of Weapon Proficiency and similar feats, a composite longbow is treated as if it were a longbow.</p>", 
+	"name": "Longbow, Composite", 
+	"weight": "3 lbs.", 
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Descriptions/Longbow/Composite", 
+	"price": "100 gp", 
+	"misc": {
+		"Weapon": {
+			"Weapon Class": "Ranged Weapons", 
+			"Dmg (S)": "1d6", 
+			"Proficiency": "Martial Weapons", 
+			"Range": "110 ft.", 
+			"Critical": "&times;3", 
+			"Dmg (M)": "1d8", 
+			"Dmg (L)": "2d6", 
+			"Type": "P", 
+			"Dmg (T)": "1d4"
+		}
+	}, 
+	"source": "Core Rulebook", 
+	"type": "item",
+	"subtype": "weapon",
+	"dependencies": [
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons"
+	],
+	"apply": {
+		"section": {
+			"sets": [
+				{"variable": "tags", "operation": "union", "value": [
+						"Weapon",
+						"Weapon.Ranged",
+						"Weapon.TwoHanded",
+						"Weapon.Martial",
+						"Weapon.Piercing",
+						"Weapon.Bow",
+						"Material.Wood"
+				]}
+			],
+			"lists": [
+				{"variable": "name", "operation": "push", "value": "Composite Longbow"}
+			]
+		},
+		"item": {
+			"modifiers": [
+				{"variable": "weight", "formula": "3"}
+			],
+		},
+		"weapon": {
+			"sets": [
+				{"variable": "type", "operation": "add", "value": "P"},
+			],
+			"modifiers": [
+				{"variable": "cost", "formula": "100"},
+				{"variable": "medium_damage", "formula": "'1d8'"},
+				{"variable": "crit_mult", "formula": "2"},
+				{"variable": "range", "formula": "110"},
+				{"variable": "to_hit_modifier", "formula": "0"},
+				{"variable": "damage_modifier", "formula": "0"}
+			]
+		}
+	}
+}));
 
 // Masterwork Weapons
 Rules.addRule(new GameObject({
@@ -319,8 +416,10 @@ Rules.addRule(new GameObject({
 	"type": "section",
 	"apply": {
 		"section": {
+			"sets": [
+				{"variable": "tags", "operation": "add", "value": "Masterwork"}
+			],
 			"lists": [
-				{"variable": "tags", "operation": "push", "value": "Masterwork"},
 				{"variable": "name", "operation": "unshift", "value": "Masterwork"}
 			]
 		},
@@ -347,9 +446,9 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"enchantment": {
 			"variables": [
-				{"variable": "caster_level", "default": 0},
-				{"variable": "skill", "default": []},
-				{"variable": "requirements", "default": []}
+				{"variable": "caster_level", "type": "number"},
+				{"variable": "skill", "type": "list"},
+				{"variable": "requirements", "type": "list"}
 			],
 			"lists": [
 				{"variable": "skill", "operation": "push", "value": ["Spellcraft", "Craft (weapons)", "Craft (bows)"]},
@@ -377,16 +476,18 @@ Rules.addRule(new GameObject({
 		"enchantment": {
 			"context": true,
 			"variables": [
-				{"variable": "plus", "default": 0},
-				{"variable": "effective_plus", "default": 0}
+				{"variable": "plus", "type": "number"},
+				{"variable": "effective_plus", "type": "number"}
 			],
 		},
 		"section": {
-			"lists": [
-				{"variable": "tags", "operation": "push", "value": [
+			"sets": [
+				{"variable": "tags", "operation": "union", "value": [
 						"Magic",
 						"Magic.Plus"
-				]},
+				]}
+			],
+			"lists": [
 				{"variable": "name", "operation": "remove", "value": "Masterwork"},
 				{"variable": "name", "operation": "unshift", "formula": "'+' + $.getVariable(renderable, this, '$.enchantment.plus');"}
 			]
@@ -453,7 +554,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"enchantment": {
 			"variables": [
-				{"variable": "aura", "default": []},
+				{"variable": "aura", "type": "list"},
 			]
 		},
 		"armor": {
@@ -488,7 +589,7 @@ Rules.addRule(new GameObject({
 		},
 		"enchantment": {
 			"variables": [
-				{"variable": "cost", "default": 0}
+				{"variable": "cost", "type": "number"}
 			],
 			"modifiers": [
 				{"variable": "cost", "formula": "$.Weapon.magicCostPlus($.getVariable(renderable, this, '$.enchantment.effective_plus'))"}
@@ -543,10 +644,12 @@ Rules.addRule(new GameObject({
 			]
 		},
 		"section": {
-			"lists": [
-				{"variable": "tags", "operation": "push", "value": "Keen"},
-				{"variable": "name", "operation": "insert", "value": "Keen"}
+			"sets": [
+				{"variable": "tags", "operation": "add", "value": "Keen"}
 			],
+			"lists": [
+				{"variable": "name", "operation": "insert", "value": "Keen"}
+			]
 		},
 		"weapon": {
 			"conditions": [
@@ -585,10 +688,12 @@ Rules.addRule(new GameObject({
 			]
 		},
 		"section": {
-			"lists": [
-				{"variable": "tags", "operation": "push", "value": "Flaming"},
-				{"variable": "name", "operation": "insert", "value": "Flaming"}
+			"sets": [
+				{"variable": "tags", "operation": "add", "value": "Flaming"}
 			],
+			"lists": [
+				{"variable": "name", "operation": "insert", "value": "Flaming"}
+			]
 		},
 		"weapon": {
 			"conditions": [
@@ -598,11 +703,60 @@ Rules.addRule(new GameObject({
 				}
 			],
 			"variables": [
-				{"variable": "bonus_damage", "default": []},
+				{"variable": "bonus_damage", "type": "list"},
 			],
 			"lists": [
 				{"variable": "bonus_damage", "operation": "push", "value": [
 					{"damage": "1d6", "type": "flaming"}
+				]}
+			]
+		}
+	}
+}));
+
+// Holy
+Rules.addRule(new GameObject({
+	"body": "<p id=\"weapons-holy\">A <i>holy weapon</i> is imbued with holy power. This power makes the weapon good-aligned and thus bypasses the corresponding damage reduction. It deals an extra 2d6 points of damage against all creatures of evil alignment. It bestows one permanent negative level on any evil creature attempting to wield it. The negative level remains as long as the weapon is in hand and disappears when the weapon is no longer wielded. This negative level cannot be overcome in any way (including by <i>restoration</i> spells) while the weapon is wielded.</p><p>Moderate evocation [good]; CL 7th; Craft Magic Arms and Armor, <i>holy smite</i>, creator must be good; Price +2 bonus.</p>", 
+	"url": "pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Holy", 
+	"type": "section", 
+	"name": "Holy", 
+	"source": "Core Rulebook",
+	"dependencies": [
+		"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions"
+	],
+	"apply": {
+		"enchantment": {
+			"modifiers": [
+				{"variable": "effective_plus", "formula": "2"},
+				{"variable": "caster_level", "formula": "7", "type": "caster_level"}
+			],
+			"lists": [
+				{"variable": "aura", "operation": "push",
+					"value": {"strength": "Moderate", "aura": "Evocation [Good]"}},
+				{"variable": "requirements", "operation": "push", "value": {"type": "spell", "name": "Holy Smite"}}
+			]
+		},
+		"section": {
+			"sets": [
+				{"variable": "tags", "operation": "add", "value": "Holy"}
+			],
+			"lists": [
+				{"variable": "name", "operation": "insert", "value": "Holy"}
+			]
+		},
+		"weapon": {
+			"conditions": [
+				{
+					"text": "Can only be added to weapons with a +1 enchantment",
+					"formula": "$.hasTag(renderable, 'Magic.Plus')"
+				}
+			],
+			"variables": [
+				{"variable": "bonus_damage", "type": "list"},
+			],
+			"lists": [
+				{"variable": "bonus_damage", "operation": "push", "value": [
+					{"damage": "2d6", "type": "vs evil"}
 				]}
 			]
 		}

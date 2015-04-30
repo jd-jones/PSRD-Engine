@@ -12,8 +12,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "number", "default": 0},
-				{"variable": "data", "default": 1}
+				{"variable": "number", "type": "number"},
+				{"variable": "data", "type": "number", "default": 1}
 			],
 			"modifiers": [
 				{"variable": "number", "formula": "$.getVariable(renderable, this, '$.section.data')"}
@@ -57,7 +57,7 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"test": {
 			"variables": [
-				{"variable": "number", "default": 0},
+				{"variable": "number", "type": "number"},
 			],
 			"modifiers": [
 				{"variable": "number", "formula": "2", "type": "foo"}
@@ -119,8 +119,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"test": {
 			"variables": [
-				{"variable": "number", "default": 0},
-				{"variable": "data", "default": 1},
+				{"variable": "number", "type": "number"},
+				{"variable": "data", "type": "number", "default": 1},
 			]
 		}
 	}

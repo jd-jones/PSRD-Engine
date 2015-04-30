@@ -8,7 +8,7 @@ var Modifier = require("./modifier.js");
 var NumberVar = module.exports = Variable.extend({
 	__name__: 'NumberVar',
 	defaults: {
-		"default": "",
+		"default": 0,
 		"value": 0
 	},
 

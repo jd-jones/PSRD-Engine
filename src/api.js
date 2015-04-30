@@ -35,9 +35,8 @@ module.exports.hasListItem = function(renderable, modifier, path, item) {
 }
 
 module.exports.hasTag = function(renderable, tag) {
-	var list = renderable.section.tags.get('value');
-	var result = _.indexOf(list, tag) > -1;
-	return result
+	var set = renderable.section.tags.get('value');
+	return set.contains(tag)
 }
 
 module.exports.getVariable = function(renderable, modifier, path) {

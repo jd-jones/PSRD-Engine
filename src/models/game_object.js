@@ -4,10 +4,12 @@ var _ = require('underscore');
 
 var Variable = require('./variable.js');
 var ListOperation = require('./list_operation.js');
+var SetOperation = require('./set_operation.js');
 var Condition = require('./condition.js');
 var StringVar = require('./string.js');
 var NumberVar = require('./number.js');
 var ListVar = require('./list.js');
+var SetVar = require('./set.js');
 
 var GameObject = module.exports = Backbone.Model.extend({
 	__name__: 'GameObject',
@@ -38,12 +40,14 @@ var GameObject = module.exports = Backbone.Model.extend({
 					var variables = [];
 					_.each(apply.variables, function(variable) {
 						if(variable instanceof Variable == false) {
-							if (NumberVar.isValid(variable.default)) {
+							if (variable.type == "number") {
 								variables.push(new NumberVar(variable));
-							} else if(StringVar.isValid(variable.default)) {
+							} else if(variable.type == "string") {
 								variables.push(new StringVar(variable));
-							} else if(ListVar.isValid(variable.default)) {
+							} else if(variable.type == "list") {
 								variables.push(new ListVar(variable));
+							} else if(variable.type == "set") {
+								variables.push(new SetVar(variable));
 							} else {
 								throw "Don't recognize variable type: " + JSON.stringify(variable);
 							}
@@ -76,6 +80,18 @@ var GameObject = module.exports = Backbone.Model.extend({
 						}
 					});
 					apply.lists = lists;
+				}
+				if ("sets" in apply) {
+					var sets = [];
+					_.each(apply.sets, function(setOp) {
+						if(setOp instanceof SetOperation == false) {
+							setOp.context = key;
+							sets.push(new SetOperation(setOp));
+						} else {
+							sets.push(setOp);
+						}
+					});
+					apply.sets = sets;
 				}
 			});
 		}

@@ -26,7 +26,8 @@
     "karma-phantomjs-launcher": "^0.1.4",
     "lodash": "^2.4.1",
     "underscore": "^1.7.0",
-    "vinyl-source-stream": "^0.1.1"
+    "vinyl-source-stream": "^0.1.1",
+    "set": "^1.1.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -12,19 +12,19 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"section": {
 			"variables": [
-				{"variable": "list", "default": []},
-				{"variable": "string", "default": ""},
-				{"variable": "number", "default": 0}
+				{"variable": "list", "type": "list"},
+				{"variable": "string", "type": "string"},
+				{"variable": "number", "type": "number"}
 			]
 		},
 		"test": {
 			"variables": [
-				{"variable": "list1", "default": []}
+				{"variable": "list1", "type": "list"}
 			]
 		},
 		"notatest": {
 			"variables": [
-				{"variable": "list2", "default": []}
+				{"variable": "list2", "type": "list"}
 			]
 		}
 	}
@@ -57,7 +57,7 @@ Rules.addRule(new GameObject({
 		},
 		"othertest": {
 			"variables": [
-				{"variable": "list1", "default": ["Test", "OtherTest"]}
+				{"variable": "list1", "type": "list", "default": ["Test", "OtherTest"]}
 			]
 		},
 		"notatest": {

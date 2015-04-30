@@ -82,13 +82,13 @@ module.exports.sizeDamage = function(damage, size) {
 
 module.exports.hitPoints = function(renderable, size) {
 	var tags = renderable.section.tags.get('value')
-	var medium = tagTreeResolve(tags, weapon_hp, "Weapon Hit Points");
+	var medium = tagTreeResolve(tags.get(), weapon_hp, "Weapon Hit Points");
 	return Math.ceil(weapon_2x_adjust[size] * medium);
 }
 
 module.exports.hardness = function(renderable, size) {
 	var tags = renderable.section.tags.get('value')
-	var medium = tagTreeResolve(tags, weapon_hardness, "Weapon Hardness");
+	var medium = tagTreeResolve(tags.get(), weapon_hardness, "Weapon Hardness");
 	return Math.ceil(weapon_2x_adjust[size] * medium);
 }
 

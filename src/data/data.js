@@ -6,6 +6,59 @@ var GameObject = require('../models/game_object.js');
 var Rules = require('../models/rules.js');
 
 Rules.addRule(new GameObject({
+	"body": "<p>Your attack bonus with a melee weapon is the following:</p><p><big><b>Base attack bonus + Strength modifier + size modifier</b></big></p>", 
+	"url": "pfsrd://Core Rulebook/Rules/Combat/Combat Statistics/Attack Bonus/Melee", 
+	"type": "section", 
+	"name": "Melee", 
+	"source": "Core Rulebook",
+	"apply": {
+		"wielder": {
+			"context": true,
+			"variables": [
+				{"variable": "to_hit_stat", "type": "string", "default": "$.attributes.str_mod"},
+				{"variable": "to_hit_stat_mod", "type": "number"},
+				{"variable": "damage_stat", "type": "string", "default": "$.attributes.str_mod"},
+				{"variable": "damage_stat_mod", "type": "number"},
+				{"variable": "size", "type": "string", "default": "medium"},
+				{"variable": "proficient", "type": "number", "default": 1}
+			],
+			"modifiers": [
+				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.bab')", "type": "bab"},
+				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.to_hit_stat_mod')", "type": "stat"},
+				{"variable": "$.weapon.to_hit_modifier", "formula": "$.Weapon.sizeToHit($.getVariable(renderable, this, '$.wielder.size'))", "type": "size"},
+				{"variable": "$.weapon.damage_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.damage_stat_mod')", "type": "stat"},
+			]
+		}
+	}
+}));
+
+Rules.addRule(new GameObject({
+	"body": "<p>With a ranged weapon, your attack bonus is the following:</p><p><big><b>Base attack bonus + Dexterity modifier + size modifier + range penalty</b></big></p>", 
+	"url": "pfsrd://Core Rulebook/Rules/Combat/Combat Statistics/Attack Bonus/Ranged", 
+	"type": "section", 
+	"name": "Ranged",
+	"source": "Core Rulebook", 
+	"apply": {
+		"wielder": {
+			"context": true,
+			"variables": [
+				{"variable": "to_hit_stat", "type": "string", "default": "$.attributes.dex_mod"},
+				{"variable": "to_hit_stat_mod", "type": "number"},
+				{"variable": "damage_stat", "type": "string", "default": "$.attributes.str_mod"},
+				{"variable": "damage_stat_mod", "type": "number"},
+				{"variable": "size", "type": "string", "default": "medium"},
+				{"variable": "proficient", "type": "number", "default": 1}
+			],
+			"modifiers": [
+				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.bab')", "type": "bab"},
+				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.to_hit_stat_mod')", "type": "stat"},
+				{"variable": "$.weapon.to_hit_modifier", "formula": "$.Weapon.sizeToHit($.getVariable(renderable, this, '$.wielder.size'))", "type": "size"},
+			]
+		}
+	}
+}));
+
+Rules.addRule(new GameObject({
 	"body": "<p id=\"ammunition\">Projectile weapons use ammunition: arrows (for bows), bolts (for crossbows), darts (for blowguns), or sling bullets (for slings and halfling sling staves). When using a bow, a character can draw ammunition as a free action; crossbows and slings require an action for reloading (as noted in their descriptions). Generally speaking, ammunition that hits its target is destroyed or rendered useless, while ammunition that misses has a 50% chance of being destroyed or lost.</p><p>Although they are thrown weapons, shuriken are treated as ammunition for the purposes of drawing them, crafting masterwork or otherwise special versions of them, and what happens to them after they are thrown.</p>", 
 	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Melee and Ranged Weapons/Ammunition", 
 	"type": "section", 
@@ -219,6 +272,11 @@ Rules.addRule(new GameObject({
 	"name": "Simple, Martial, and Exotic Weapons", 
 	"source": "Core Rulebook",
 	"apply": {
+		"wielder": {
+			"modifiers": [
+				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.proficient') < 1 ? -4 : 0", "type": "proficiency"}
+			]
+		},
 		"weapon": {
 			"variables": [
 				{"variable": "proficiency", "type": "set"}
@@ -318,7 +376,8 @@ Rules.addRule(new GameObject({
 	"type": "item",
 	"subtype": "weapon",
 	"dependencies": [
-		"pfsrd://Core Rulebook/Rules/Equipment/Weapons"
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons",
+		"pfsrd://Core Rulebook/Rules/Combat/Combat Statistics/Attack Bonus/Melee"
 	],
 	"apply": {
 		"section": {
@@ -384,7 +443,8 @@ Rules.addRule(new GameObject({
 	"type": "item",
 	"subtype": "weapon",
 	"dependencies": [
-		"pfsrd://Core Rulebook/Rules/Equipment/Weapons"
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons",
+		"pfsrd://Core Rulebook/Rules/Combat/Combat Statistics/Attack Bonus/Ranged"
 	],
 	"apply": {
 		"section": {

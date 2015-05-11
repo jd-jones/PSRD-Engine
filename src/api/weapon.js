@@ -16,6 +16,18 @@ weapon_hardness = {
 	"Weapon.Ranged": 5
 }
 
+weapon_to_hit_adjust = {
+	"colossal": -8,
+	"gargantuan": -4,
+	"huge": -2,
+	"large": -1,
+	"medium": 0,
+	"small": 1,
+	"tiny": 2,
+	"diminutive": 4,
+	"fine": 8
+}
+
 weapon_cost_adjust = {
 	"colossal": 16,
 	"gargantuan": 8,
@@ -78,6 +90,10 @@ module.exports.sizeWeight = function(weight, size) {
 module.exports.sizeDamage = function(damage, size) {
 	var steps = weapon_adjust[size];
 	return transitionDie(damage, steps);
+}
+
+module.exports.sizeToHit = function(size) {
+	return weapon_adjust[size];
 }
 
 module.exports.hitPoints = function(renderable, size) {

@@ -48,12 +48,14 @@ module.exports.getVariable = function(renderable, modifier, path) {
 	// instance, variable comes in as the Modifier, not the original variable
 	if(modifier.__name__ == "Variable") {
 		node.on("change:value", function() {
-			var realvar = Variables.getVariable(renderable, modifier.get('context'), modifier.get('variable'))
+			var realvar = Variables.getVariable(
+				renderable, modifier.get('context'), modifier.get('variable'))
 			Variables.recalculateVariable(renderable, realvar);
 		}, modifier);
 	} else if(modifier.__name__ == "ListOperation") {
 		node.on("change:value", function() {
-			var realvar = Variables.getVariable(renderable, modifier.get('context'), modifier.get('variable'))
+			var realvar = Variables.getVariable(
+				renderable, modifier.get('context'), modifier.get('variable'))
 			Lists.recalculateList(renderable, realvar);
 		}, modifier);
 	}

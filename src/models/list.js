@@ -13,6 +13,10 @@ var ListVar = module.exports = Variable.extend({
 		"value": []
 	},
 
+	setParameters: function(parameters) {
+		this.set('parameters', parameters)
+	},
+
 	getValue: function() {
 		var args = Array.prototype.slice.call(arguments);
 		var ignore = null;

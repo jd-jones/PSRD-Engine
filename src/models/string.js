@@ -12,6 +12,19 @@ var StringVar = module.exports = Variable.extend({
 		"value": ""
 	},
 
+	setParameters: function(parameters) {
+		this.set('parameters', parameters)
+		var key = this.get('context') + "." + this.get('variable');
+		if (key in parameters) {
+			var value = parameters[key];
+			if (StringVar.isValid(value)) {
+				this.set('default', value);
+			} else {
+				throw new Error(key + " with value: " + value + " is not a string.")
+			}
+		}
+	},
+
 	getValue: function() {
 		var args = Array.prototype.slice.call(arguments);
 		var ignore = null;

@@ -14,6 +14,10 @@ var SetVar = module.exports = Variable.extend({
 		"value": new Set([])
 	},
 
+	setParameters: function(parameters) {
+		this.set('parameters', parameters)
+	},
+
 	getValue: function() {
 		var args = Array.prototype.slice.call(arguments);
 		var ignore = null;

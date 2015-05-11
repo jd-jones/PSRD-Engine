@@ -157,3 +157,53 @@ describe("Verify Pass Condition", function() {
 	});
 });
 
+
+Rules.addRule(new GameObject({
+	"body": "text", 
+	"url": "pfsrd://Tests/VarAutoParameter1", 
+	"type": "section", 
+	"subtype": "test", 
+	"name": "Test1", 
+	"source": "Tests",
+	"apply": {
+		"section": {
+			"variables": [
+				{"variable": "number", "type": "number"},
+				{"variable": "data", "type": "number", "default": 1},
+				{"variable": "string", "type": "string"}
+			]
+		}
+	}
+}));
+
+describe("Verify url args work", function() {
+	var renderable = Core.createRenderable(Rules.getRule("pfsrd://Tests/VarAutoParameter1?section.data=2&section.number=5&section.string=yermom"));
+	it("has proper default", function() {
+		expect(renderable.section.number.get('value')).toEqual(5);
+		expect(renderable.section.data.get('value')).toEqual(2);
+		expect(renderable.section.string.get('value')).toEqual("yermom");
+	});
+});
+
+Rules.addRule(new GameObject({
+	"body": "text", 
+	"url": "pfsrd://Tests/VarAutoParameterBad1", 
+	"type": "section", 
+	"subtype": "test", 
+	"name": "Test1", 
+	"source": "Tests",
+	"apply": {
+		"section": {
+			"variables": [
+				{"variable": "number", "type": "number"}
+			]
+		}
+	}
+}));
+
+describe("Verify url args error wrong variable type", function() {
+	it("has proper default", function() {
+		expect( function(){ Core.createRenderable(Rules.getRule("pfsrd://Tests/VarAutoParameterBad1?section.number=foo")); } ).toThrow(new Error("section.number with value: foo is not a number."));
+	});
+});
+

@@ -2,10 +2,11 @@ var Backbone = require('backbone');
 Backbone.$ = require('jquery');
 var _ = require('underscore');
 
-var Variable = require('./variable.js');
 var ListOperation = require('./list_operation.js');
 var SetOperation = require('./set_operation.js');
 var Condition = require('./condition.js');
+var Modifier = require('./modifier.js');
+var Variable = require('./variable.js');
 var StringVar = require('./string.js');
 var NumberVar = require('./number.js');
 var ListVar = require('./list.js');
@@ -29,6 +30,7 @@ var GameObject = module.exports = Backbone.Model.extend({
 					var conditions = [];
 					_.each(apply.conditions, function(condition) {
 						if(condition instanceof Condition == false) {
+							condition.context = key;
 							conditions.push(new Condition(condition));
 						} else {
 							conditions.push(condition);
@@ -40,6 +42,7 @@ var GameObject = module.exports = Backbone.Model.extend({
 					var variables = [];
 					_.each(apply.variables, function(variable) {
 						if(variable instanceof Variable == false) {
+							variable.context = key;
 							if (variable.type == "number") {
 								variables.push(new NumberVar(variable));
 							} else if(variable.type == "string") {
@@ -105,6 +108,11 @@ var GameObject = module.exports = Backbone.Model.extend({
 			this.set('parameters', parameters);
 			if (this.has("apply")) {
 				_.each(this.get("apply"), function(apply, key) {
+					if ("variables" in apply) {
+						_.each(apply.variables, function(variable) {
+							variable.setParameters(parameters);
+						});
+					}
 					if ("conditions" in apply) {
 						_.each(apply.conditions, function(condition) {
 							condition.set('parameters', parameters);

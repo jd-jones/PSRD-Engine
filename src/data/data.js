@@ -476,9 +476,14 @@ Rules.addRule(new GameObject({
 		"enchantment": {
 			"context": true,
 			"variables": [
+				{"variable": "base_plus", "type": "number"},
 				{"variable": "plus", "type": "number"},
 				{"variable": "effective_plus", "type": "number"}
 			],
+			"modifiers": [
+				{"variable": "plus", "formula": "$.getVariable(renderable, this, '$.enchantment.base_plus')"},
+				{"variable": "effective_plus", "formula": "$.getVariable(renderable, this, '$.enchantment.base_plus')"},
+			]
 		},
 		"section": {
 			"sets": [
@@ -500,8 +505,6 @@ Rules.addRule(new GameObject({
 				}
 			],
 			"modifiers": [
-				{"variable": "$.enchantment.plus", "formula": "$.getUrlArg(this, 'plus')"},
-				{"variable": "$.enchantment.effective_plus", "formula": "$.getUrlArg(this, 'plus')"},
 				{"variable": "to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.enchantment.plus')", "type": "enhancement"},
 				{"variable": "damage_modifier", "formula": "$.getVariable(renderable, this, '$.enchantment.plus')", "type": "enhancement"}
 			]

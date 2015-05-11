@@ -12,6 +12,19 @@ var NumberVar = module.exports = Variable.extend({
 		"value": 0
 	},
 
+	setParameters: function(parameters) {
+		this.set('parameters', parameters)
+		var key = this.get('context') + "." + this.get('variable');
+		if (key in parameters) {
+			var value = parameters[key];
+			if (!isNaN(value)) {
+				this.set('default', Number(value));
+			} else {
+				throw new Error(key + " with value: " + value + " is not a number.")
+			}
+		}
+	},
+
 	getValue: function() {
 		var args = Array.prototype.slice.call(arguments);
 		var ignore = null;

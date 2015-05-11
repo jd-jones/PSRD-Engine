@@ -51,7 +51,7 @@ var SetVar = module.exports = Variable.extend({
 					'parameters': this.get('parameters')
 				}));
 			} else {
-				throw this.variable + " Must be an Array, not " + JSON.stringify(this.get('default'))
+				throw new Error(this.variable + " Must be an Array, not " + JSON.stringify(this.get('default')));
 			}
 		}
 		return new SetVar(newvar);
@@ -98,7 +98,7 @@ SetVar.addModifier = function(set, modifier) {
 			set = SetVar.difference(set, modifier);
 			break;
 		default:
-			throw "Don't recognize set modifier operation: " + modifier.get('operation');
+			throw new Error("Don't recognize set modifier operation: " + modifier.get('operation'));
 	}
 	return set;
 }

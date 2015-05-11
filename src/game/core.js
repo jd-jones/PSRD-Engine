@@ -95,7 +95,7 @@ function applyConditions(renderable, toApply) {
 		}
 	});
 	if (failures.length > 0) {
-		throw "Failed to apply: " + JSON.stringify(failures);
+		throw new Error("Failed to apply: " + JSON.stringify(failures));
 	}
 }
 

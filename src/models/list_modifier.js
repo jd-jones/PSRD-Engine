@@ -12,7 +12,7 @@ var ListModifier = module.exports = Backbone.Model.extend({
 
 	formula: function($, renderable) {
 		if(!(this.has('formula'))) {
-			throw "ListModifier Has no formula";
+			throw new Error("ListModifier Has no formula");
 		}
 		this.formula = Function("$", "renderable", "return " + this.get("formula"));
 		return this.formula($, renderable);

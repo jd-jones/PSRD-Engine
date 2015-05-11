@@ -109,7 +109,7 @@ function tagTreeResolve(tags, tree, name) {
 			}
 		}
 	}
-	throw name + "tree does not contain a value for tags";
+	throw new Error(name + "tree does not contain a value for tags");
 }
 
 /*

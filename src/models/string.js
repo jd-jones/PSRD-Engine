@@ -54,7 +54,7 @@ var StringVar = module.exports = Variable.extend({
 					'formula': "'" + this.get('default') + "'"
 				}));
 			} else {
-				throw this.variable + " Must be a string, not " + JSON.stringify(this.get('default'))
+				throw new Error(this.variable + " Must be a string, not " + JSON.stringify(this.get('default')));
 			}
 		}
 		return new StringVar(newvar);

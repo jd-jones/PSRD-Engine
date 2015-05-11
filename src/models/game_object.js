@@ -52,7 +52,7 @@ var GameObject = module.exports = Backbone.Model.extend({
 							} else if(variable.type == "set") {
 								variables.push(new SetVar(variable));
 							} else {
-								throw "Don't recognize variable type: " + JSON.stringify(variable);
+								throw new Error("Don't recognize variable type: " + JSON.stringify(variable));
 							}
 						} else {
 							variables.push(variable);

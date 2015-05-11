@@ -30,7 +30,7 @@ module.exports.hasListItem = function(renderable, modifier, path, item) {
 		var value = node.get('value');
 		return _.indexOf(value, item) > -1;
 	} else {
-		throw path + " is not a list variable";
+		throw new Error(path + " is not a list variable");
 	}
 }
 
@@ -82,5 +82,5 @@ module.exports.getUrlArg = function(modifier, arg) {
 			return arg;
 		}
 	}
-	throw arg + " not in modifier";
+	throw new Error(arg + " not in modifier");
 }

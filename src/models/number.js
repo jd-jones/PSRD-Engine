@@ -74,7 +74,7 @@ var NumberVar = module.exports = Variable.extend({
 				'formula': this.get('default')
 			}));
 			} else {
-				throw this.variable + " Must be a number, not " + JSON.stringify(this.get('default'))
+				throw new Error(this.variable + " Must be a number, not " + JSON.stringify(this.get('default')));
 			}
 		}
 		return new NumberVar(newvar);

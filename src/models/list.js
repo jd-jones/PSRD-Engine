@@ -50,7 +50,7 @@ var ListVar = module.exports = Variable.extend({
 					'parameters': this.get('parameters')
 				}));
 			} else {
-				throw this.variable + " Must be a string, not " + JSON.stringify(this.get('default'))
+				throw new Error(this.variable + " Must be a list, not " + JSON.stringify(this.get('default')));
 			}
 		}
 		return new ListVar(newvar);
@@ -99,7 +99,7 @@ ListVar.addModifier = function(list, modifier) {
 			list = ListVar.remove(list, modifier);
 			break;
 		default:
-			throw "Don't recognize list modifier operation: " + modifier.get('operation');
+			throw new Error("Don't recognize list modifier operation: " + modifier.get('operation'));
 	}
 	return list;
 }

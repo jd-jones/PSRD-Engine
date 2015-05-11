@@ -12,12 +12,12 @@ var Variable = module.exports = Backbone.Model.extend({
 	},
 
 	getValue: function() {
-		throw "Abstract class: getValue should have been overridden";
+		throw new Error("Abstract class: getValue should have been overridden");
 	},
 
 	formula: function($, renderable) {
 		if(!(this.has('formula'))) {
-			throw this.get('variable') + " Has no formula";
+			throw new Error(this.get('variable') + " Has no formula");
 		}
 		this.formula = Function("$", "renderable", "return " + this.get("formula"));
 		return this.formula($, renderable);

@@ -12,7 +12,7 @@ var SetModifier = module.exports = Backbone.Model.extend({
 
 	formula: function($, renderable) {
 		if(!(this.has('formula'))) {
-			throw "SetModifier Has no formula";
+			throw new Error("SetModifier Has no formula");
 		}
 		this.formula = Function("$", "renderable", "return " + this.get("formula"));
 		return this.formula($, renderable);

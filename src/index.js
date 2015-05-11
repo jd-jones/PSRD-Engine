@@ -8,7 +8,12 @@ var Render = require('./utils/render.js');
 var Rules = require('./models/rules.js');
 var Core = require('./game/core.js');
 require('./data/data.js');
-
+require('./data/enchantment.js');
+require('./data/fake.js');
+require('./data/rules.js');
+require('./data/weapon_improvements.js');
+require('./data/weapons.js');
+require('./data/weapon_special_abilities.js');
 //alert(eval(variable.get("formula")));
 //Render.render(Dice.transitionDie("1d6", -2));
 //alert(variable.formula(Api, context, this));

@@ -210,7 +210,7 @@ function renderWeaponTable(renderable) {
 	}
 	results += "<td>" + range + "</td>";
 	results += "<td>" + renderable.item.weight.get('value') + " lbs.</td>";
-	results += "<td>" + renderable.weapon.type.get('value') + "</td>";
+	results += "<td>" + renderable.weapon.type.get('value').get().join("/") + "</td>";
 	var special = renderable.weapon.special.get('value').slice(0);
 	if("bonus_damage" in renderable.weapon) {
 		_.each(renderable.weapon.bonus_damage.get('value'), function(dam) {

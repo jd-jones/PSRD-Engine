@@ -54,7 +54,8 @@ Rules.addRule(new GameObject({
 		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Weight",
 		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Type",
 		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Qualities/Special",
-		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object"
+		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object",
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Simple/Martial/and Exotic Weapons"
 	],
 	"apply": {
 		"section": {
@@ -211,6 +212,21 @@ Rules.addRule(new GameObject({
 	}
 }));
 
+Rules.addRule(new GameObject({
+	"body": "<p id=\"simple-martial-and-exotic-weapons\">Anybody but a druid, monk, or wizard is proficient with all simple weapons. Barbarians, fighters, paladins, and rangers are proficient with all simple and all martial weapons. Characters of other classes are proficient with an assortment of simple weapons and possibly some martial or even exotic weapons. All characters are proficient with unarmed strikes and any natural weapons possessed by their race. A character who uses a weapon with which he is not proficient takes a &ndash;4 penalty on attack rolls.</p>", 
+	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Simple/Martial/and Exotic Weapons", 
+	"type": "section", 
+	"name": "Simple, Martial, and Exotic Weapons", 
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"variables": [
+				{"variable": "proficiency", "type": "set"}
+			]
+		}
+	}
+}));
+
 // Smashing an object
 Rules.addRule(new GameObject({
 	"body": "<p>Smashing a weapon or shield with a slashing or bludgeoning weapon is accomplished with the sunder combat maneuver (see Combat). Smashing an object is like sundering a weapon or shield, except that your combat maneuver check is opposed by the object's AC. Generally, you can smash an object only with a bludgeoning or slashing weapon.</p><p>Armor Class: Objects are easier to hit than creatures because they don't usually move, but many are tough enough to shrug off some damage from each blow. An object's Armor Class is equal to 10 + its size modifier (see Table: Size and Armor Class of Objects) + its Dexterity modifier. An inanimate object has not only a Dexterity of 0 (&ndash;5 penalty to AC), but also an additional &ndash;2 penalty to its AC. Furthermore, if you take a full-round action to line up a shot, you get an automatic hit with a melee weapon and a +5 bonus on attack rolls with a ranged weapon.</p><p>Hardness: Each object has hardness&mdash;a number that represents how well it resists damage. When an object is damaged, subtract its hardness from the damage. Only damage in excess of its hardness is deducted from the object's hit points (see Table: Common Armor, Weapon, and Shield Hardness and Hit Points, Table: Substance Hardness and Hit Points, and Table: Object Hardness and Hit Points).</p><p>Hit Points: An object's hit point total depends on what it is made of and how big it is (see Table: Common Armor, Weapon, and Shield Hardness and Hit Points, Table: Substance Hardness and Hit Points, and Table: Object Hardness and Hit Points). Objects that take damage equal to or greater than half their total hit points gain the broken condition (see Conditions). When an object's hit points reach 0, it's ruined.</p><p>Very large objects have separate hit point totals for different sections.</p><p>Energy Attacks: Energy attacks deal half damage to most objects. Divide the damage by 2 before applying the object's hardness. Some energy types might be particularly effective against certain objects, subject to GM discretion. For example, fire might do full damage against parchment, cloth, and other objects that burn easily. Sonic might do full damage against glass and crystal objects.</p><p>Ranged Weapon Damage: Objects take half damage from ranged weapons (unless the weapon is a siege engine or something similar). Divide the damage dealt by 2 before applying the object's hardness.</p><p>Ineffective Weapons: Certain weapons just can't effectively deal damage to certain objects. For example, a bludgeoning weapon cannot be used to damage a rope. Likewise, most melee weapons have little effect on stone walls and doors, unless they are designed for breaking up stone, such as a pick or hammer.</p><p>Immunities: Objects are immune to nonlethal damage and to critical hits.</p><p>Magic Armor, Shields, and Weapons: Each +1 of enhancement bonus adds 2 to the hardness of armor, a weapon, or a shield, and +10 to the item's hit points.</p><p>Vulnerability to Certain Attacks: Certain attacks are especially successful against some objects. In such cases, attacks deal double their normal damage and may ignore the object's hardness.</p><p>Damaged Objects: A damaged object remains functional with the broken condition until the item's hit points are reduced to 0, at which point it is destroyed.</p><p>Damaged (but not destroyed) objects can be repaired with the Craft skill and a number of spells.</p><p>Saving Throws: Nonmagical, unattended items never make saving throws. They are considered to have failed their saving throws, so they are always fully affected by spells and other attacks that allow saving throws to resist or negate. An item attended by a character (being grasped, touched, or worn) makes saving throws as the character (that is, using the character's saving throw bonus).</p><p>Magic items always get saving throws. A magic item's Fortitude, Reflex, and Will save bonuses are equal to 2 + half its caster level. An attended magic item either makes saving throws as its owner or uses its own saving throw bonus, whichever is better.</p><p>Animated Objects: Animated objects count as creatures for purposes of determining their Armor Class (do not treat them as inanimate objects).</p>", 
@@ -329,7 +345,8 @@ Rules.addRule(new GameObject({
 		},
 		"weapon": {
 			"sets": [
-				{"variable": "type", "operation": "add", "value": "S"},
+				{"variable": "type", "operation": "add", "value": "slashing"},
+				{"variable": "proficiency", "operation": "add", "value": "longsword"},
 			],
 			"modifiers": [
 				{"variable": "cost", "formula": "15"},
@@ -393,7 +410,8 @@ Rules.addRule(new GameObject({
 		},
 		"weapon": {
 			"sets": [
-				{"variable": "type", "operation": "add", "value": "P"},
+				{"variable": "type", "operation": "add", "value": "piercing"},
+				{"variable": "proficiency", "operation": "add", "value": "longbow"},
 			],
 			"modifiers": [
 				{"variable": "cost", "formula": "100"},
@@ -503,6 +521,9 @@ Rules.addRule(new GameObject({
 					"text": "Must be masterwork",
 					"formula": "$.hasTag(renderable, 'Masterwork')"
 				}
+			],
+			"sets": [
+				{"variable": "type", "operation": "add", "value": "magic"}
 			],
 			"modifiers": [
 				{"variable": "to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.enchantment.plus')", "type": "enhancement"},
@@ -756,6 +777,9 @@ Rules.addRule(new GameObject({
 			],
 			"variables": [
 				{"variable": "bonus_damage", "type": "list"},
+			],
+			"sets": [
+				{"variable": "type", "operation": "add", "value": "good"}
 			],
 			"lists": [
 				{"variable": "bonus_damage", "operation": "push", "value": [

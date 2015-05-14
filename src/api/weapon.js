@@ -16,52 +16,70 @@ weapon_hardness = {
 	"Weapon.Ranged": 5
 }
 
+sizes = [
+	"fine",
+	"diminutive",
+	"tiny",
+	"small",
+	"medium",
+	"large",
+	"huge",
+	"gargantuan",
+	"colossal"
+]
+
+wield_categories = [
+	"Light",
+	"OneHanded",
+	"TwoHanded"
+]
+
 weapon_to_hit_adjust = {
-	"colossal": -8,
-	"gargantuan": -4,
-	"huge": -2,
-	"large": -1,
-	"medium": 0,
-	"small": 1,
-	"tiny": 2,
+	"fine": 8,
 	"diminutive": 4,
-	"fine": 8
+	"tiny": 2,
+	"small": 1,
+	"medium": 0,
+	"large": -1,
+	"huge": -2,
+	"gargantuan": -4,
+	"colossal": -8
 }
 
 weapon_cost_adjust = {
-	"colossal": 16,
-	"gargantuan": 8,
-	"huge": 4,
-	"large": 2,
-	"medium": 1,
-	"small": 1,
-	"tiny": 0.5,
+	"fine": 0.125,
 	"diminutive": 0.25,
-	"fine": 0.125
+	"tiny": 0.5,
+	"small": 1,
+	"medium": 1,
+	"large": 2,
+	"huge": 4,
+	"gargantuan": 8,
+	"colossal": 16
 }
 
 weapon_adjust = {
-	"colossal": 4,
-	"gargantuan": 3,
-	"huge": 2,
-	"large": 1,
-	"medium": 0,
-	"small": -1,
-	"tiny": -2,
+	"fine": -4,
 	"diminutive": -3,
-	"fine": -4
+	"tiny": -2,
+	"small": -1,
+	"medium": 0,
+	"large": 1,
+	"huge": 2,
+	"gargantuan": 3,
+	"colossal": 4
 }
 
 weapon_2x_adjust = {
-	"colossal": 16,
-	"gargantuan": 8,
-	"huge": 4,
-	"large": 2,
-	"medium": 1,
-	"small": 0.5,
-	"tiny": 0.25,
+	"fine": 0.0625,
 	"diminutive": 0.125,
-	"fine": 0.0625
+	"tiny": 0.25,
+	"small": 0.5,
+	"medium": 1,
+	"large": 2,
+	"huge": 4,
+	"gargantuan": 8,
+	"colossal": 16
 }
 
 weapon_magic_costs = {
@@ -126,6 +144,45 @@ function tagTreeResolve(tags, tree, name) {
 		}
 	}
 	throw new Error(name + "tree does not contain a value for tags");
+}
+
+module.exports.wielderWieldCategory = function(wieldCategory, wielder_size, size) {
+	var sizeDiff = sizeCategoryDiff(wielder_size, size);
+	var categoryIndex = wield_categories.indexOf(wieldCategory);
+	var newIndex = categoryIndex + sizeDiff;
+	if (wieldCategory == "Ranged") {
+		if (sizeDiff != 0) {
+			throw new Error("Ranged weapons cannot be used by creatures of a different size")
+		} else {
+			return "Ranged"
+		}
+	} else if (newIndex < 0) {
+		throw new Error(
+			"Weapon of size "
+			+ size
+			+ " is too small to be wielded by a creature of size "
+			+ wielder_size)
+	} else if (newindex >= wield_categories.length) {
+		throw new Error(
+			"Weapon of size "
+			+ size
+			+ " is too large to be wielded by a creature of size "
+			+ wielder_size)
+	} else {
+		return wield_categories[newIndex];
+	}
+}
+
+function sizeCategoryDiff(size1, size2) {
+	var size1val = sizes.indexOf(size1);
+	if(size1val == -1) {
+		throw new Error("Unrecognized size: " + size1);
+	}
+	var size2val = sizes.indexOf(size2);
+	if(size2val == -1) {
+		throw new Error("Unrecognized size: " + size2);
+	}
+	return size1val - size2val;
 }
 
 /*

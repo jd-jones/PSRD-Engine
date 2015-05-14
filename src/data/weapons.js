@@ -66,7 +66,8 @@ Rules.addRule(new GameObject({
 				{"variable": "crit_range", "formula": "1"},
 				{"variable": "crit_mult", "formula": "1"},
 				{"variable": "to_hit_modifier", "formula": "0"},
-				{"variable": "damage_modifier", "formula": "0"}
+				{"variable": "damage_modifier", "formula": "0"},
+				{"variable": "wield_category", "formula": "'OneHanded'"}
 			],
 		}
 	}
@@ -132,7 +133,8 @@ Rules.addRule(new GameObject({
 				{"variable": "crit_mult", "formula": "2"},
 				{"variable": "range", "formula": "110"},
 				{"variable": "to_hit_modifier", "formula": "0"},
-				{"variable": "damage_modifier", "formula": "0"}
+				{"variable": "damage_modifier", "formula": "0"},
+				{"variable": "wield_category", "formula": "'Ranged'"},
 			]
 		}
 	}

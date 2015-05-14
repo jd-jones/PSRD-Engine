@@ -123,18 +123,23 @@ Rules.addRule(new GameObject({
 			],
 		},
 		"weapon": {
+			"variables": [
+				{"variable": "max_strength", "type": "number"}
+			],
 			"sets": [
 				{"variable": "type", "operation": "add", "value": "piercing"},
 				{"variable": "proficiency", "operation": "add", "value": "longbow"},
 			],
 			"modifiers": [
 				{"variable": "cost", "formula": "100"},
+				{"variable": "cost", "formula": "100 * $.getVariable(renderable, this, '$.weapon.max_strength')"},
 				{"variable": "medium_damage", "formula": "'1d8'"},
 				{"variable": "crit_mult", "formula": "2"},
 				{"variable": "range", "formula": "110"},
 				{"variable": "to_hit_modifier", "formula": "0"},
 				{"variable": "damage_modifier", "formula": "0"},
 				{"variable": "wield_category", "formula": "'Ranged'"},
+				{"variable": "damage_modifier", "formula": "$.min([$.getVariable(renderable, this, '$.weapon.max_strength'), $.getVariable(renderable, this, '$.wielder.damage_stat_mod')])"},
 			]
 		}
 	}

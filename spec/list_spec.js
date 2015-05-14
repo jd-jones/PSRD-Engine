@@ -47,7 +47,7 @@ Rules.addRule(new GameObject({
 	}
 }));
 
-describe("Verify Shift", function() {
+describe("Verify Unshift", function() {
 	var renderable = Core.createRenderable(Rules.getRule("pfsrd://Tests/ListUnshift"));
 	it("has had C unshifted", function() {
 		expect(renderable.section.list.get('value')).toEqual(["C", "A", "B"]);
@@ -153,10 +153,36 @@ Rules.addRule(new GameObject({
 	}
 }));
 
-describe("Verify Insert", function() {
+describe("Verify Remove", function() {
 	var renderable = Core.createRenderable(Rules.getRule("pfsrd://Tests/ListRemove"));
-	it("has had C & D inserted", function() {
+	it("has had A & C removed", function() {
 		expect(renderable.section.list.get('value')).toEqual(["B", "D", "E"]);
+	});
+});
+
+Rules.addRule(new GameObject({
+	"body": "text", 
+	"url": "pfsrd://Tests/ListReplace", 
+	"type": "section", 
+	"subtype": "test", 
+	"name": "Test1", 
+	"source": "Tests",
+	"apply": {
+		"section": {
+			"variables": [
+				{"variable": "list", "type": "list", "default": ["A", "B", "C", "D", "E"]}
+			],
+			"lists": [
+				{"variable": "list", "operation": "replace", "value": ['D', 'F']}
+			]
+		}
+	}
+}));
+
+describe("Verify Replace", function() {
+	var renderable = Core.createRenderable(Rules.getRule("pfsrd://Tests/ListReplace"));
+	it("has had the list replaced with [D, F]", function() {
+		expect(renderable.section.list.get('value')).toEqual(["D", "F"]);
 	});
 });
 
@@ -204,3 +230,4 @@ describe("Verify Recalculate", function() {
 		expect(renderable.section.list.get('value')).toEqual(["A", "B", "foo"]);
 	});
 });
+

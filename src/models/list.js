@@ -98,6 +98,9 @@ ListVar.addModifier = function(list, modifier) {
 		case "remove":
 			list = ListVar.remove(list, modifier);
 			break;
+		case "replace":
+			list = ListVar.replace(list, modifier);
+			break;
 		default:
 			throw new Error("Don't recognize list modifier operation: " + modifier.get('operation'));
 	}
@@ -142,5 +145,15 @@ ListVar.remove = function remove(list, modifier) {
 	arrayOperation(modifier, function(value) {
 		list = _.without(list, value);
 	});
+	return list
+}
+
+ListVar.replace = function replace(list, modifier) {
+	var value = modifier.get('value');
+	if (value instanceof Array) {
+		list = value;
+	} else {
+		list = [value];
+	}
 	return list
 }

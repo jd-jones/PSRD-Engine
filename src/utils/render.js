@@ -5,9 +5,179 @@ var _ = require('underscore');
 
 var Api = require('../api.js');
 var Rules = require('../models/rules.js');
+var Core = require('../game/core.js');
+var Utils = require('../game/utils.js');
 
-module.exports.render = function(renderable) {
-	results = renderWeapon(renderable);
+function rollDie(die) {
+	var parts = die.split("d");
+	if (parts.length != 2) {
+		throw new Error("Malformed die: " + die);
+	}
+	var count = parseInt(parts[0]);
+	var sides = parseInt(parts[1]);
+	results = [];
+	for(i = 0; i < count; i++) {
+		results.push(getRandomInt(1,sides));
+	}
+	return results;
+}
+
+function getRandomInt(min, max) {
+	return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+module.exports.renderOptions = function(base, def, optional) {
+	var results = "";
+	_.each(optional, function(option) {
+		var rule = Rules.getRule(option);
+		results += "<input type='checkbox' name='ruleOption' value='";
+		results += option;
+		results += "'>";
+		results += rule.get('name');
+		results += "<br>\n";
+	});
+	$('#options').html(results);
+
+
+	function renderAll() {
+		var renderable = Core.createRenderable(Rules.getRule(base));
+		_.each(def, function(url) {
+			Core.applyGameObjects(renderable,
+				Rules.getRule(url)); 
+		});
+		_.each($('input[name=ruleOption]'), function(optionBox) {
+			if (optionBox.checked) {
+				Core.applyGameObjects(renderable,
+					Rules.getRule(optionBox.value));
+			}
+		});
+		renderWeaponGenerator(renderable);
+		render(renderable);
+		renderCalculations(renderable);
+		console.log(renderable);
+	}
+
+	renderAll();
+	_.each($('input[name=ruleOption]'), function(optionBox) {
+		optionBox.onchange = renderAll;
+	});
+}
+
+function renderAttack(renderable, attack, roll, crit) {
+	var results = "";
+	var thb = renderable.weapon.to_hit_modifier.get('value');
+	var bonus = thb + attack['penalty'];
+	if(crit) {
+		crit += renderable.weapon.crit_confirm_modifier.get('value');
+	}
+	results += "1d20 (" + roll + ") " + bonus + " = <b>" + (bonus + roll) + "</b><br>\n";
+	if (roll == 1) {
+		results += "Natural 1, miss<br>\n";
+	} else {
+		var times = 1;
+		if(!crit) {
+			times = attack['gen_damage_times'];
+		}
+		for (var i = 0; i < times; i++) {
+			results += renderDamage(renderable, crit);
+		}
+	}
+	return results
+}
+
+function toggleDamage() {
+	if ($(this).hasClass("disabled")) {
+		$(this).removeClass("disabled");
+	} else {
+		$(this).addClass("disabled");
+	}
+	var total = 0;
+	var damage = $(this).parent();
+	_.each(damage.find('.roll-component'), function(comp) {
+		if(!($(comp).hasClass("disabled"))) {
+			var num = comp.children[0].innerText;
+			total += parseInt(num);
+		}
+	});
+	damage.find('.roll-results').html(total);
+}
+
+function renderDamage(renderable, crit) {
+	var results = "";
+	var total = 0;
+	var times = 1;
+	var guid = Utils.guid();
+	if(crit) {
+		times = renderable.weapon.crit_mult.get('value') - 1;
+	}
+	results += "<span id='" + guid +"'>Damage: ";
+	for (var i = 0; i < times; i++) {
+		var die = renderable.weapon.damage.get('value');
+		var dmgMod = renderable.weapon.damage_modifier.get('value');
+		if(crit) {
+			dmgMod += renderable.weapon.crit_damage_modifier.get('value');
+		}
+		var dmgRoll = rollDie(die);
+		var sum = dmgRoll.reduce(function(pv, cv) { return pv + cv; }, 0);
+		results += "<span class='roll-component'>[" + die + " (" + dmgRoll + ") + " + dmgMod + " = <b> ";
+		results += (dmgMod + sum);
+		results += "</b>]</span> ";
+		total += dmgMod + sum;
+	}
+	var bonus_damage = null;
+	if(crit && "crit_bonus_damage" in renderable.weapon) {
+		bonus_damage = renderable.weapon.crit_bonus_damage.get('value');
+	} else if("bonus_damage" in renderable.weapon) {
+		bonus_damage = renderable.weapon.bonus_damage.get('value');
+	}
+	if (bonus_damage) {
+		_.each(bonus_damage, function(dam) {
+			var die = dam["damage"];
+			var dmgRoll = rollDie(die);
+			var sum = dmgRoll.reduce(function(pv, cv) { return pv + cv; }, 0);
+			results += dam["type"] + ": ";
+			results += "<span class='roll-component'>[" + die + " (" + dmgRoll + ") = <b> ";
+			results += sum;
+			results += "</b>]</span> ";
+			total += sum;
+		});
+	}
+	results += " Total: <b><span class='roll-results'>" + total + "</span></b></span><br>\n";
+	return results;
+}
+
+
+function renderWeaponGenerator(renderable) {
+	var results = "<button type='button' id='attack_roller'>Roll attack</button>";
+	results += "<div id='roller_results'></div>";
+	$('#roller').html(results);
+
+	function rollAttack() {
+		var results = "";
+		var attacks = renderable.wielder.full_attack.get('value');
+		_.each(attacks, function(attack) {
+			var roll = rollDie("1d20")[0];
+			results += renderAttack(renderable, attack, roll, false);
+			results += "<br>\n";
+			var critRange = renderable.weapon.crit_range.get('value');
+			if(roll > (20 - critRange)) {
+				roll = rollDie("1d20")[0];
+				results += "Crit Threat: ";
+				results += renderAttack(renderable, attack, roll, true);
+				results += "<br>\n";
+			}
+		});
+		$('#roller_results').html(results);
+		_.each($('#roller_results').find(".roll-component"), function(comp) {
+			comp.onclick = toggleDamage;
+		});
+	}
+
+	$('#attack_roller')[0].onclick = rollAttack;
+}
+
+var render = module.exports.render = function(renderable) {
+	var results = renderWeapon(renderable);
 	$('#main').html(results);
 }
 
@@ -18,7 +188,7 @@ function renderName(renderable) {
 	return results;
 }
 
-module.exports.renderCalculations = function(renderable) {
+var renderCalculations = module.exports.renderCalculations = function(renderable) {
 	$('#calculations').empty();
 	calculations = "<H2>Calculated Values</H2>\n";
 	_.each(renderable.contexts, function(context) {
@@ -133,19 +303,42 @@ function renderWeapon(renderable) {
 			results += section.get('body');
 		}
 	});
-	results += "<p class = 'stat-block-breaker'>Construction</p>";
-	results += "<p class='stat-block-1'><b>Requirements</b> ";
-	var requirements = [];
-	_.each(renderable.enchantment.requirements.get('value'), function(req) {
-		requirements.push(req["name"]);
-	});
-	results += requirements.join(", ");
-	results += "; <b>Skills </b>";
-	results += renderable.enchantment.skill.get('value').join(", ");
-	results += "; <b>Cost </b>";
-	var cost = renderable.item.cost.get('value') / 2;
-	results += cost;
-	results += "gp</p>";
+	if ("enchantment" in renderable) {
+		results += "<p class = 'stat-block-breaker'>Construction</p>";
+		results += "<p class='stat-block-1'><b>Requirements</b> ";
+		var requirements = [];
+		_.each(renderable.enchantment.requirements.get('value'), function(req) {
+			requirements.push(req["name"]);
+		});
+		results += requirements.join(", ");
+		results += "; <b>Skills </b>";
+		results += renderable.enchantment.skill.get('value').join(", ");
+		results += "; <b>Cost </b>";
+		var cost = renderable.item.cost.get('value') / 2;
+		results += cost;
+		results += "gp</p>";
+	}
+	return results;
+}
+
+function renderToHitBonus(renderable) {
+	var thb = renderable.weapon.to_hit_modifier.get('value');
+	var attacks = renderable.wielder.full_attack.get('value');
+	var results = "";
+	if (thb == 0 && attacks.length == 0) {
+		results += "&ndash;";
+	} else {
+		var slash = "";
+		_.each(attacks, function(attack) {
+			var bonus = thb + attack['penalty'];
+			results += slash; 
+			if (bonus > 0) {
+				results += "+";
+			}
+			results += bonus;
+			slash = "/";
+		});
+	}
 	return results;
 }
 
@@ -179,15 +372,7 @@ function renderWeaponTable(renderable) {
 	results += "</i></td></tr>";
 	results += "<tr><td class='indent-1'>" + renderable.section.name.get('value').join(seperator=" ") + "</td>";
 	results += "<td>" + renderable.item.cost.get('value') + "</td>";
-	var thb = renderable.weapon.to_hit_modifier.get('value');
-	if (thb != 0) {
-		results += "<td>";
-		if (thb > 0) {
-			results += "+";
-		}
-		results += thb;
-		results += "</td>"
-	}
+	results += "<td>" + renderToHitBonus(renderable) + "</td>";
 	results += "<td>" + renderable.weapon.damage.get('value');
 	var db = renderable.weapon.damage_modifier.get('value');
 	if (db > 0) {

@@ -10,24 +10,50 @@ var Core = require('./game/core.js');
 require('./data/data.js');
 require('./data/enchantment.js');
 require('./data/fake.js');
+require('./data/feats.js');
 require('./data/rules.js');
 require('./data/weapon_improvements.js');
 require('./data/weapons.js');
 require('./data/weapon_special_abilities.js');
-//alert(eval(variable.get("formula")));
-//Render.render(Dice.transitionDie("1d6", -2));
-//alert(variable.formula(Api, context, this));
-var renderable = Core.createRenderable(Rules.getRule("pfsrd://Ultimate Equipment/Rules/Arms And Armor/Weapons/Weapon Descriptions/Longsword"));
 
-Core.applyGameObjects(renderable,
-	Rules.getRule("pfsrd://Core Rulebook/Rules/Equipment/Weapons/Masterwork Weapons"));
-Core.applyGameObjects(renderable,
-	Rules.getRule("pfsrd://Core Rulebook/Rules/Magic Items/Weapons?plus=3"));
-Core.applyGameObjects(renderable,
-	Rules.getRule("pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Keen"));
-Core.applyGameObjects(renderable,
-	Rules.getRule("pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Flaming"));
+/*
+var base = "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Descriptions/Longbow/Composite?weapon.max_strength=2";
 
-Render.render(renderable);
-Render.renderCalculations(renderable);
-console.log(renderable);
+var def = [
+	"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Masterwork Weapons",
+	"pfsrd://Core Rulebook/Rules/Magic Items/Weapons?enchantment.base_plus=1",
+	"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Holy",
+	"pfsrd://Fake/Vigil",
+	"pfsrd://Fake/Vigil/Falcon's Aim",
+	"pfsrd://Fake/Vigil/Belt of Giant Strength +2"
+];
+
+var optional = [
+	"pfsrd://Fake/Vigil/Bane",
+	"pfsrd://Fake/Vigil/Judgement/Destruction",
+	"pfsrd://Fake/Vigil/Judgement/Justice",
+	"pfsrd://Fake/Vigil/Blessing Of Fervor/Effect/Extra Attack", 
+	"pfsrd://Fake/Vigil/Spells/Heroism",
+	"pfsrd://Fake/Vigil/Spells/Daybreak Arrow",
+	"pfsrd://Fake/Vigil/Spells/Flames of the Faithful",
+	"pfsrd://Fake/Vigil/Spells/Wrath",
+	"pfsrd://Fake/Vigil/Spells/Divine Favor",
+	"pfsrd://Ultimate Combat/Feats/Enfilading Fire", 
+	"pfsrd://Core Rulebook/Feats/Manyshot", 
+	"pfsrd://Core Rulebook/Feats/Point-Blank Shot", 
+	"pfsrd://Core Rulebook/Feats/Rapid Shot", 
+];*/
+
+var base = "pfsrd://Ultimate Equipment/Rules/Arms And Armor/Weapons/Weapon Descriptions/Longsword";
+
+var def = [
+	"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Masterwork Weapons",
+	"pfsrd://Core Rulebook/Rules/Magic Items/Weapons?enchantment.base_plus=3",
+	"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Keen",
+	"pfsrd://Core Rulebook/Rules/Magic Items/Weapons/Magic Weapon Special Ability Descriptions/Flaming",
+	"pfsrd://Fake/Vigil",
+];
+
+var optional = [];
+
+Render.renderOptions(base, def, optional);

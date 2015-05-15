@@ -174,3 +174,7 @@ tfoot td {
 	font-weight: bold;
 	font-style: italic;
 }
+
+.disabled {
+	color: DarkGray;
+}

@@ -211,7 +211,10 @@ Rules.addRule(new GameObject({
 		"weapon": {
 			"variables": [
 				{"variable": "crit_range", "type": "number", "default": 1},
-				{"variable": "crit_mult", "type": "number", "default": 1}
+				{"variable": "crit_mult", "type": "number", "default": 1},
+				{"variable": "crit_confirm_modifier", "type": "number"},
+				{"variable": "crit_damage_modifier", "type": "number"},
+				{"variable": "crit_special", "type": "list"}
 			]
 		}
 	}

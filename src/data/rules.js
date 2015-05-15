@@ -5,6 +5,7 @@ var _ = require('underscore');
 var GameObject = require('../models/game_object.js');
 var Rules = require('../models/rules.js');
 
+// Melee
 Rules.addRule(new GameObject({
 	"body": "<p>Your attack bonus with a melee weapon is the following:</p><p><big><b>Base attack bonus + Strength modifier + size modifier</b></big></p>", 
 	"url": "pfsrd://Core Rulebook/Rules/Combat/Combat Statistics/Attack Bonus/Melee", 
@@ -42,6 +43,7 @@ Rules.addRule(new GameObject({
 	}
 }));
 
+// Ranged
 Rules.addRule(new GameObject({
 	"body": "<p>With a ranged weapon, your attack bonus is the following:</p><p><big><b>Base attack bonus + Dexterity modifier + size modifier + range penalty</b></big></p>", 
 	"url": "pfsrd://Core Rulebook/Rules/Combat/Combat Statistics/Attack Bonus/Ranged", 
@@ -75,6 +77,7 @@ Rules.addRule(new GameObject({
 	}
 }));
 
+// Ammunition
 Rules.addRule(new GameObject({
 	"body": "<p id=\"ammunition\">Projectile weapons use ammunition: arrows (for bows), bolts (for crossbows), darts (for blowguns), or sling bullets (for slings and halfling sling staves). When using a bow, a character can draw ammunition as a free action; crossbows and slings require an action for reloading (as noted in their descriptions). Generally speaking, ammunition that hits its target is destroyed or rendered useless, while ammunition that misses has a 50% chance of being destroyed or lost.</p><p>Although they are thrown weapons, shuriken are treated as ammunition for the purposes of drawing them, crafting masterwork or otherwise special versions of them, and what happens to them after they are thrown.</p>", 
 	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Melee and Ranged Weapons/Ammunition", 
@@ -109,7 +112,7 @@ Rules.addRule(new GameObject({
 	}
 }));
 
-// "pfsrd://Core Rulebook/Rules/Equipment/Weapons?children=false",
+// Weapons
 Rules.addRule(new GameObject({
 	"body": "<p>From the common longsword to the exotic dwarven urgrosh, weapons come in a wide variety of shapes and sizes. </p><p>All weapons deal hit point damage. This damage is subtracted from the current hit points of any creature struck by the weapon. When the result of the die roll to make an attack is a natural 20 (that is, the die actually shows a 20), this is known as a critical threat (although some weapons can score a critical threat on a roll of less than 20). If a critical threat is scored, another attack roll is made, using the same modifiers as the original attack roll. If this second attack roll is equal or greater than the target's AC, the hit becomes a critical hit, dealing additional damage.</p><p>Weapons are grouped into several interlocking sets of categories. These categories pertain to what training is needed to become proficient in a weapon's use (simple, martial, or exotic), the weapon's usefulness either in close combat (melee) or at a distance (ranged, which includes both thrown and projectile weapons), its relative encumbrance (light, one-handed, or two-handed), and its size (Small, Medium, or Large).</p>",
 	"name": "Weapons",

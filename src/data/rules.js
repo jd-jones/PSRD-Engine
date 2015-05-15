@@ -230,7 +230,8 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"weapon": {
 			"variables": [
-				{"variable": "range", "type": "number"}
+				{"variable": "range", "type": "number"},
+				{"variable": "range_penalty", "type": "number", "default": -2}
 			]
 		}
 	}

@@ -149,7 +149,7 @@ function tagTreeResolve(tags, tree, name) {
 module.exports.wielderWieldCategory = function(wieldCategory, wielder_size, size) {
 	var sizeDiff = sizeCategoryDiff(wielder_size, size);
 	var categoryIndex = wield_categories.indexOf(wieldCategory);
-	var newIndex = categoryIndex + sizeDiff;
+	var newIndex = categoryIndex - sizeDiff;
 	if (wieldCategory == "Ranged") {
 		if (sizeDiff != 0) {
 			throw new Error("Ranged weapons cannot be used by creatures of a different size")
@@ -162,7 +162,7 @@ module.exports.wielderWieldCategory = function(wieldCategory, wielder_size, size
 			+ size
 			+ " is too small to be wielded by a creature of size "
 			+ wielder_size)
-	} else if (newindex >= wield_categories.length) {
+	} else if (newIndex >= wield_categories.length) {
 		throw new Error(
 			"Weapon of size "
 			+ size

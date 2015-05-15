@@ -20,13 +20,23 @@ Rules.addRule(new GameObject({
 				{"variable": "damage_stat", "type": "string", "default": "$.attributes.str_mod"},
 				{"variable": "damage_stat_mod", "type": "number"},
 				{"variable": "size", "type": "string", "default": "medium"},
-				{"variable": "proficient", "type": "number", "default": 1}
+				{"variable": "proficient", "type": "number", "default": 1},
+				{"variable": "bab", "type": "number"},
+				{"variable": "full_attack", "type": "list"},
+				{"variable": "standard_attack", "type": "list"},
+				{"variable": "offhand_full_attack", "type": "list"}
+			],
+			"lists": [
+				{"variable": "full_attack", "operation": "replace", "formula": "$.Weapon.createFullAttack($.getVariable(renderable, this, '$.wielder.bab'))"},
+				{"variable": "standard_attack", "operation": "replace", "formula": "$.Weapon.createStandardAttack()"},
 			],
 			"modifiers": [
 				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.bab')", "type": "bab"},
 				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.to_hit_stat_mod')", "type": "stat"},
 				{"variable": "$.weapon.to_hit_modifier", "formula": "$.Weapon.sizeToHit($.getVariable(renderable, this, '$.wielder.size'))", "type": "size"},
 				{"variable": "$.weapon.damage_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.damage_stat_mod')", "type": "stat"},
+				{"variable": "full_attack", "formula": "$.getVariable(renderable, this, '$.wielder.bab')"},
+				{"variable": "standard_attack", "formula": "$.getVariable(renderable, this, '$.wielder.bab')"},
 			]
 		}
 	}
@@ -47,7 +57,14 @@ Rules.addRule(new GameObject({
 				{"variable": "damage_stat", "type": "string", "default": "$.attributes.str_mod"},
 				{"variable": "damage_stat_mod", "type": "number"},
 				{"variable": "size", "type": "string", "default": "medium"},
-				{"variable": "proficient", "type": "number", "default": 1}
+				{"variable": "proficient", "type": "number", "default": 1},
+				{"variable": "bab", "type": "number"},
+				{"variable": "full_attack", "type": "list"},
+				{"variable": "standard_attack", "type": "list"}
+			],
+			"lists": [
+				{"variable": "full_attack", "operation": "replace", "formula": "$.Weapon.createFullAttack($.getVariable(renderable, this, '$.wielder.bab'))"},
+				{"variable": "standard_attack", "operation": "replace", "formula": "$.Weapon.createStandardAttack()"},
 			],
 			"modifiers": [
 				{"variable": "$.weapon.to_hit_modifier", "formula": "$.getVariable(renderable, this, '$.wielder.bab')", "type": "bab"},

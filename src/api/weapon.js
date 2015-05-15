@@ -252,3 +252,20 @@ function transitionDie(die, transition) {
 	}
 	return new_die;
 }
+
+module.exports.createFullAttack = function(bab) {
+	var attacks = [];
+	var negative = 0;
+	while(negative < bab) {
+		attacks.push({"penalty": -1 * negative, "gen_damage_times": 1});
+		negative += 6;
+	}
+	return attacks;
+}
+
+module.exports.createStandardAttack = function(gen_damage_times) {
+	gen_damage_times = gen_damage_times || 1
+	var attacks = [];
+	attacks.push({"penalty": 0, "gen_damage_times": gen_damage_times});
+	return attacks;
+}

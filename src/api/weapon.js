@@ -146,6 +146,11 @@ function tagTreeResolve(tags, tree, name) {
 	throw new Error(name + "tree does not contain a value for tags");
 }
 
+module.exports.wielderSizePenalty = function(wielder_size, size) {
+	var sizeDiff = sizeCategoryDiff(wielder_size, size);
+	return Math.abs(sizeDiff) * -2;
+}
+
 module.exports.wielderWieldCategory = function(wieldCategory, wielder_size, size) {
 	var sizeDiff = sizeCategoryDiff(wielder_size, size);
 	var categoryIndex = wield_categories.indexOf(wieldCategory);

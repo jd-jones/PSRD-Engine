@@ -130,6 +130,7 @@ Rules.addRule(new GameObject({
 		"pfsrd://Core Rulebook/Rules/Additional Rules/Exploration/Breaking and Entering/Smashing an Object",
 		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Simple/Martial/and Exotic Weapons",
 		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Size", 
+		"pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Size/Inappropriately Sized Weapons"
 	],
 	"apply": {
 		"section": {
@@ -404,6 +405,13 @@ Rules.addRule(new GameObject({
 	"url": "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Size/Inappropriately Sized Weapons", 
 	"type": "section", 
 	"name": "Inappropriately Sized Weapons", 
-	"source": "Core Rulebook"
+	"source": "Core Rulebook",
+	"apply": {
+		"weapon": {
+			"modifiers": [
+				{"variable": "to_hit_modifier", "formula": "$.Weapon.wielderSizePenalty($.getVariable(renderable, this, '$.wielder.size'), $.getVariable(renderable, this, '$.item.size'))"},
+			]
+		}
+	}
 }));
 

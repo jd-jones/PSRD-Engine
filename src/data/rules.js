@@ -23,6 +23,7 @@ Rules.addRule(new GameObject({
 				{"variable": "size", "type": "string", "default": "medium"},
 				{"variable": "proficient", "type": "number", "default": 1},
 				{"variable": "bab", "type": "number"},
+				{"variable": "special", "type": "list"},
 				{"variable": "full_attack", "type": "list"},
 				{"variable": "standard_attack", "type": "list"},
 				{"variable": "offhand_full_attack", "type": "list"}
@@ -59,6 +60,7 @@ Rules.addRule(new GameObject({
 				{"variable": "size", "type": "string", "default": "medium"},
 				{"variable": "proficient", "type": "number", "default": 1},
 				{"variable": "bab", "type": "number"},
+				{"variable": "special", "type": "list"},
 				{"variable": "full_attack", "type": "list"},
 				{"variable": "standard_attack", "type": "list"}
 			],

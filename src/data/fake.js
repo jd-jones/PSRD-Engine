@@ -70,19 +70,19 @@ Rules.addRule(new GameObject({
 	"apply": {
 		"inquisitor": {
 			"variables": [
-				{"variable": "level", "type": "number", "default": 11}
+				{"variable": "level", "type": "number", "default": 12}
 			]
 		},
 		"combat": {
 			"modifiers": [
-				{"variable": "bab", "formula": "8"}
+				{"variable": "bab", "formula": "9"}
 			]
 		},
 		"attributes": {
 			"modifiers": [
 				{"variable": "strength", "formula": "12"},
 				{"variable": "dexterity", "formula": "16"},
-				{"variable": "constitution", "formula": "13"},
+				{"variable": "constitution", "formula": "14"},
 				{"variable": "intelligence", "formula": "10"},
 				{"variable": "wisdom", "formula": "18"},
 				{"variable": "charisma", "formula": "10"},
@@ -144,6 +144,30 @@ Rules.addRule(new GameObject({
 			"lists": [
 				{"variable": "bonus_damage", "operation": "push", "value": [
 					{"damage": "2d6", "type": "bane"}
+				]}
+			]
+		}
+	}
+}));
+
+Rules.addRule(new GameObject({
+	"body": "", 
+	"url": "pfsrd://Fake/Vigil/Greater Bane", 
+	"type": "section", 
+	"name": "Greater Bane", 
+	"source": "Core Rulebook",
+	"dependencies": [
+	],
+	"apply": {
+		"enchantment": {
+			"modifiers": [
+				{"variable": "plus", "formula": "2"},
+			]
+		},
+		"weapon": {
+			"lists": [
+				{"variable": "bonus_damage", "operation": "push", "value": [
+					{"damage": "4d6", "type": "bane"}
 				]}
 			]
 		}

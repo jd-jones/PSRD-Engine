@@ -16,7 +16,7 @@ require('./data/weapon_improvements.js');
 require('./data/weapons.js');
 require('./data/weapon_special_abilities.js');
 
-/*
+
 var base = "pfsrd://Core Rulebook/Rules/Equipment/Weapons/Weapon Descriptions/Longbow/Composite?weapon.max_strength=2";
 
 var def = [
@@ -29,7 +29,7 @@ var def = [
 ];
 
 var optional = [
-	"pfsrd://Fake/Vigil/Bane",
+	"pfsrd://Fake/Vigil/Greater Bane",
 	"pfsrd://Fake/Vigil/Judgement/Destruction",
 	"pfsrd://Fake/Vigil/Judgement/Justice",
 	"pfsrd://Fake/Vigil/Blessing Of Fervor/Effect/Extra Attack", 
@@ -42,8 +42,8 @@ var optional = [
 	"pfsrd://Core Rulebook/Feats/Manyshot", 
 	"pfsrd://Core Rulebook/Feats/Point-Blank Shot", 
 	"pfsrd://Core Rulebook/Feats/Rapid Shot", 
-];*/
-
+];
+/*
 var base = "pfsrd://Ultimate Equipment/Rules/Arms And Armor/Weapons/Weapon Descriptions/Longsword";
 
 var def = [
@@ -55,5 +55,5 @@ var def = [
 ];
 
 var optional = [];
-
+*/
 Render.renderOptions(base, def, optional);

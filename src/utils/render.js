@@ -127,7 +127,7 @@ function renderDamage(renderable, crit) {
 	var bonus_damage = null;
 	if(crit && "crit_bonus_damage" in renderable.weapon) {
 		bonus_damage = renderable.weapon.crit_bonus_damage.get('value');
-	} else if("bonus_damage" in renderable.weapon) {
+	} else if(!crit && "bonus_damage" in renderable.weapon) {
 		bonus_damage = renderable.weapon.bonus_damage.get('value');
 	}
 	if (bonus_damage) {

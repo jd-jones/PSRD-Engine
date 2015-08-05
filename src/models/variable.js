@@ -11,6 +11,14 @@ var Variable = module.exports = Backbone.Model.extend({
 		"value": null
 	},
 
+	initialize: function() {
+		if(!(this.has('formula')) || this.get('formula') == null) {
+			if (this.has('value') && this.get('value') != null) {
+				this.set('formula', "'" + this.get("value") + "'");
+			}
+		}
+	},
+
 	getValue: function() {
 		throw new Error("Abstract class: getValue should have been overridden");
 	},

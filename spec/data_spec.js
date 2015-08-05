@@ -46,7 +46,7 @@ Rules.addRule(new GameObject({
 				{"variable": "list", "operation": "push", "formula": "'Test2' + '.1'"},
 			],
 			"modifiers": [
-				{"variable": "string", "formula": "'Test2'"},
+				{"variable": "string", "value": "Test2"},
 				{"variable": "number", "formula": "2"}
 			]
 		},
@@ -158,7 +158,7 @@ describe("Renderable with a variable", function() {
 		expect(section.string.get("modifiers").length).toEqual(1);
 		expect(section.string.get("modifiers")[0].get("context")).toEqual("section");
 		expect(section.string.get("modifiers")[0].has("guid")).toEqual(true);
-		expect(section.string.get("modifiers")[0].get("formula")).toEqual("''");
+		expect(section.string.get("modifiers")[0].get("formula")).toEqual("");
 		expect(section.string.get("modifiers")[0].get("value")).toEqual("");
 		expect(section.string.get("sources")).toEqual([]);
 		expect(section.string.get("value")).toEqual("");
@@ -249,7 +249,7 @@ describe("Rule applies another rule", function() {
 		expect(section.string.get("modifiers").length).toEqual(2);
 		expect(section.string.get("modifiers")[0].get("context")).toEqual("section");
 		expect(section.string.get("modifiers")[0].has("guid")).toEqual(true);
-		expect(section.string.get("modifiers")[0].get("formula")).toEqual("''");
+		expect(section.string.get("modifiers")[0].get("formula")).toEqual("");
 		expect(section.string.get("modifiers")[0].get("value")).toEqual("");
 		expect(section.string.get("modifiers")[1].get("context")).toEqual("section");
 		expect(section.string.get("modifiers")[1].has("guid")).toEqual(true);

@@ -50,8 +50,7 @@ var StringVar = module.exports = Variable.extend({
 				newvar['modifiers'].push(new Modifier({
 					'value': this.get('default'),
 					'guid': guid,
-					'context': context,
-					'formula': "'" + this.get('default') + "'"
+					'context': context
 				}));
 			} else {
 				throw new Error(this.variable + " Must be a string, not " + JSON.stringify(this.get('default')));

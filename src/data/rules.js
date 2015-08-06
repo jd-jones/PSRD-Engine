@@ -215,6 +215,7 @@ Rules.addRule(new GameObject({
 				{"variable": "crit_mult", "type": "number", "default": 1},
 				{"variable": "crit_confirm_modifier", "type": "number"},
 				{"variable": "crit_damage_modifier", "type": "number"},
+				{"variable": "crit_bonus_damage", "type": "list"},
 				{"variable": "crit_special", "type": "list"}
 			]
 		}

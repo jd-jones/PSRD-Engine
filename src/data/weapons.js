@@ -42,7 +42,6 @@ Rules.addRule(new GameObject({
 						"Weapon.Martial",
 						"Weapon.Slashing",
 						"Weapon.Blade",
-						"Material.Steel",
 						"Material.Metal"
 				]}
 			],

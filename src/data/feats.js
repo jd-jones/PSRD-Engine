@@ -71,7 +71,7 @@ Rules.addRule(new GameObject({
 		"weapon": {
 			"optional": true,
 			"modifiers": [
-				{"variable": "to_hit_modifier", "formula": "2"}
+				{"variable": "to_hit_modifier", "formula": "2", "type": "flanking"},
 			]
 		}
 	}

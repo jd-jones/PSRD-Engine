@@ -128,6 +128,23 @@ Rules.addRule(new GameObject({
 
 Rules.addRule(new GameObject({
 	"body": "", 
+	"url": "pfsrd://Fake/Vigil/Flank", 
+	"type": "section", 
+	"name": "Flanking", 
+	"source": "Core Rulebook",
+	"dependencies": [
+	],
+	"apply": {
+		"weapon": {
+			"modifiers": [
+				{"variable": "to_hit_modifier", "formula": "2", "type": "flanking"},
+			]
+		}
+	}
+}));
+
+Rules.addRule(new GameObject({
+	"body": "", 
 	"url": "pfsrd://Fake/Vigil/Bane", 
 	"type": "section", 
 	"name": "Bane", 

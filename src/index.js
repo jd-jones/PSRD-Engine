@@ -29,6 +29,7 @@ var def = [
 ];
 
 var optional = [
+	"pfsrd://Fake/Vigil/Flank", 
 	"pfsrd://Fake/Vigil/Greater Bane",
 	"pfsrd://Fake/Vigil/Judgement/Destruction",
 	"pfsrd://Fake/Vigil/Judgement/Justice",

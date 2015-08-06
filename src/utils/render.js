@@ -279,18 +279,45 @@ function renderWeapon(renderable) {
 		results += "<p class='stat-block-1'><b>Aura</b>no aura (nonmagical)";
 		results += ";<b> CL </b>&mdash;</p>";
 	}
-	results += "<p class='stat-block-1'><b>Slot</b> ";
-	results += renderable.item.slot.get('value');
-	results += "; <b>Price</b> ";
-	results += renderable.item.cost.get('value');
-	results += " gp; <b>Weight</b> ";
-	results += renderable.item.weight.get('value');
-	results += " lbs.; <b>Armor Class</b> ";
-	results += renderable.item.armor_class.get('value');
-	results += "; <b>Hit Points</b> ";
-	results += renderable.item.hit_points.get('value');
-	results += "; <b>Hardness</b> ";
-	results += renderable.item.hardness.get('value');
+	results += "<p class='stat-block-1'>";
+	var semi = "";
+	if ("slot" in renderable.item) {
+		results += "<b>Slot</b> ";
+		results += renderable.item.slot.get('value');
+		semi = "; ";
+	}
+	if ("cost" in renderable.item) {
+		results += semi;
+		semi = "; ";
+		results += "<b>Price</b> ";
+		results += renderable.item.cost.get('value');
+		results += " gp";
+	}
+	if ("weight" in renderable.item) {
+		results += semi;
+		semi = "; ";
+		results += "<b>Weight</b> ";
+		results += renderable.item.weight.get('value');
+		results += " lbs.";
+	}
+	if ("armor_class" in renderable.item) {
+		results += semi;
+		semi = "; ";
+		results += "<b>Armor Class</b> ";
+		results += renderable.item.armor_class.get('value');
+	}
+	if ("hit_points" in renderable.item) {
+		results += semi;
+		semi = "; ";
+		results += "<b>Hit Points</b> ";
+		results += renderable.item.hit_points.get('value');
+	}
+	if ("hardness" in renderable.item) {
+		results += semi;
+		semi = "; ";
+		results += "<b>Hardness</b> ";
+		results += renderable.item.hardness.get('value');
+	}
 	results += "</p>";
 	results += renderWeaponTable(renderable);
 	results += "<p class = 'stat-block-breaker'>DESCRIPTION</p>";

@@ -99,12 +99,13 @@ Rules.addRule(new GameObject({
 		},
 		"item": {
 			"variables": [
-				{"variable": "size", "type": "string", "default": "medium"},
-				{"variable": "slot", "type": "string", "default": "none"}
+				{"variable": "size", "type": "string", "default": "medium"}
 			]
 		},
-		"ammunition": {
+		"weapon": {
 			"variables": [
+				{"variable": "bonus_damage", "type": "list"},
+				{"variable": "crit_bonus_damage", "type": "list"},
 				{"variable": "to_hit_modifier", "type": "number"},
 				{"variable": "damage_modifier", "type": "number"}
 			]
@@ -141,8 +142,7 @@ Rules.addRule(new GameObject({
 		},
 		"item": {
 			"variables": [
-				{"variable": "size", "type": "string", "default": "medium"},
-				{"variable": "slot", "type": "string", "default": "none"}
+				{"variable": "size", "type": "string", "default": "medium"}
 			]
 		},
 		"weapon": {

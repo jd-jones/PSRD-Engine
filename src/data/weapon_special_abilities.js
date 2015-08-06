@@ -86,9 +86,6 @@ Rules.addRule(new GameObject({
 					"formula": "$.hasTag(renderable, 'Magic.Plus')"
 				}
 			],
-			"variables": [
-				{"variable": "bonus_damage", "type": "list"},
-			],
 			"lists": [
 				{"variable": "bonus_damage", "operation": "push", "value": [
 					{"damage": "1d6", "type": "flaming"}
@@ -134,9 +131,6 @@ Rules.addRule(new GameObject({
 					"text": "Can only be added to weapons with a +1 enchantment",
 					"formula": "$.hasTag(renderable, 'Magic.Plus')"
 				}
-			],
-			"variables": [
-				{"variable": "bonus_damage", "type": "list"},
 			],
 			"sets": [
 				{"variable": "type", "operation": "add", "value": "good"}

@@ -147,6 +147,8 @@ Rules.addRule(new GameObject({
 		},
 		"weapon": {
 			"variables": [
+				{"variable": "bonus_damage", "type": "list"},
+				{"variable": "crit_bonus_damage", "type": "list"},
 				{"variable": "to_hit_modifier", "type": "number"},
 				{"variable": "damage_modifier", "type": "number"}
 			]
@@ -215,7 +217,6 @@ Rules.addRule(new GameObject({
 				{"variable": "crit_mult", "type": "number", "default": 1},
 				{"variable": "crit_confirm_modifier", "type": "number"},
 				{"variable": "crit_damage_modifier", "type": "number"},
-				{"variable": "crit_bonus_damage", "type": "list"},
 				{"variable": "crit_special", "type": "list"}
 			]
 		}

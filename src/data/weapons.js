@@ -62,12 +62,12 @@ Rules.addRule(new GameObject({
 			],
 			"modifiers": [
 				{"variable": "cost", "formula": "15"},
-				{"variable": "medium_damage", "formula": "'1d8'"},
+				{"variable": "medium_damage", "value": "1d8"},
 				{"variable": "crit_range", "formula": "1"},
 				{"variable": "crit_mult", "formula": "1"},
 				{"variable": "to_hit_modifier", "formula": "0"},
 				{"variable": "damage_modifier", "formula": "0"},
-				{"variable": "wield_category", "formula": "'OneHanded'"}
+				{"variable": "wield_category", "value": "OneHanded"}
 			],
 		}
 	}
@@ -133,12 +133,12 @@ Rules.addRule(new GameObject({
 			"modifiers": [
 				{"variable": "cost", "formula": "100"},
 				{"variable": "cost", "formula": "100 * $.getVariable(renderable, this, '$.weapon.max_strength')"},
-				{"variable": "medium_damage", "formula": "'1d8'"},
+				{"variable": "medium_damage", "value": "1d8"},
 				{"variable": "crit_mult", "formula": "2"},
 				{"variable": "range", "formula": "110"},
 				{"variable": "to_hit_modifier", "formula": "0"},
 				{"variable": "damage_modifier", "formula": "0"},
-				{"variable": "wield_category", "formula": "'Ranged'"},
+				{"variable": "wield_category", "value": "Ranged"},
 				{"variable": "damage_modifier", "formula": "$.min([$.getVariable(renderable, this, '$.weapon.max_strength'), $.getVariable(renderable, this, '$.wielder.damage_stat_mod')])"},
 			]
 		}

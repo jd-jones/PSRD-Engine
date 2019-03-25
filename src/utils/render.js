@@ -8,6 +8,11 @@ var Rules = require('../models/rules.js');
 var Core = require('../game/core.js');
 var Utils = require('../game/utils.js');
 
+/**
+ * Roll a die.
+ * @param {string} die - format '<number dice>d<sides of one die>'
+ * FIXME: Pass number of dice and sides as a struct, or separate args
+ */
 function rollDie(die) {
 	var parts = die.split("d");
 	if (parts.length != 2) {
@@ -15,13 +20,19 @@ function rollDie(die) {
 	}
 	var count = parseInt(parts[0]);
 	var sides = parseInt(parts[1]);
+
+    // FIXME: convert to functional/list comprehension call
 	results = [];
 	for(i = 0; i < count; i++) {
 		results.push(getRandomInt(1,sides));
 	}
+
 	return results;
 }
 
+/**
+ * Return an integer sampled from uniform(min, max).
+ */
 function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -253,6 +264,7 @@ function renderAura(renderable) {
 	results += pieces.join(", ");
 	return results;
 }
+
 function renderWeapon(renderable) {
 	var results = "";
 	results += "<p class='stat-block-title'><b>";
@@ -358,7 +370,7 @@ function renderToHitBonus(renderable) {
 		var slash = "";
 		_.each(attacks, function(attack) {
 			var bonus = thb + attack['penalty'];
-			results += slash; 
+			results += slash;
 			if (bonus > 0) {
 				results += "+";
 			}
@@ -704,6 +716,8 @@ function clone(obj) {
 	return copy;
 }
 
+
+// FIXME: Can be replaced with numbers.map()
 function forEach(list, action) {
 	for (var i in list) {
 		action(list[i]);
